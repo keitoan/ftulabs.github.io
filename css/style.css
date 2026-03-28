@@ -3,25 +3,25 @@
    ============================================ */
 
 :root {
-  --bg: #060304;
-  --bg-card: #0e0809;
-  --bg-card-hover: #180e10;
-  --bg-nav: rgba(6, 3, 4, 0.94);
+  --bg: #0c0c0c;
+  --bg-card: #141414;
+  --bg-card-hover: #1c1c1c;
+  --bg-nav: rgba(12, 12, 12, 0.94);
 
-  --text: #e8e0e2;
-  --text-secondary: #a8949a;
-  --text-muted: #5c4a50;
-  --text-heading: #ffffff;
+  --text: #e0e0e0;
+  --text-secondary: #999;
+  --text-muted: #666;
+  --text-heading: #fff;
 
-  --accent: #D41638;
-  --accent-hover: #f02848;
+  --accent: #e01b3c;
+  --accent-hover: #ff3355;
   --accent-dim: #8b0a1f;
-  --accent-bg: rgba(212, 22, 56, 0.10);
-  --accent-border: rgba(212, 22, 56, 0.30);
-  --accent-glow: rgba(212, 22, 56, 0.15);
+  --accent-bg: rgba(224, 27, 60, 0.10);
+  --accent-border: rgba(224, 27, 60, 0.35);
+  --accent-glow: rgba(224, 27, 60, 0.15);
 
-  --border: #2a181c;
-  --border-hover: #3a242a;
+  --border: #2a2a2a;
+  --border-hover: #3a3a3a;
 
   --font: 'Geist Mono', 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
 
@@ -35,25 +35,25 @@
 
 /* --- Light Theme --- */
 [data-theme="light"] {
-  --bg: #faf6f7;
-  --bg-card: #f0e8ea;
-  --bg-card-hover: #e8dde0;
-  --bg-nav: rgba(250, 246, 247, 0.94);
+  --bg: #fafafa;
+  --bg-card: #f0f0f0;
+  --bg-card-hover: #e6e6e6;
+  --bg-nav: rgba(250, 250, 250, 0.94);
 
-  --text: #2a1418;
-  --text-secondary: #6b4a52;
-  --text-muted: #a08890;
-  --text-heading: #140a0c;
+  --text: #1a1a1a;
+  --text-secondary: #555;
+  --text-muted: #999;
+  --text-heading: #000;
 
-  --accent: #B80D28;
-  --accent-hover: #9a0a20;
+  --accent: #c01030;
+  --accent-hover: #a00d28;
   --accent-dim: #d44060;
-  --accent-bg: rgba(184, 13, 40, 0.07);
-  --accent-border: rgba(184, 13, 40, 0.20);
-  --accent-glow: rgba(184, 13, 40, 0.08);
+  --accent-bg: rgba(192, 16, 48, 0.06);
+  --accent-border: rgba(192, 16, 48, 0.25);
+  --accent-glow: rgba(192, 16, 48, 0.06);
 
-  --border: #dbc8cc;
-  --border-hover: #c8b0b6;
+  --border: #d4d4d4;
+  --border-hover: #bbb;
 }
 
 /* --- Reset --- */
@@ -80,32 +80,23 @@ body {
   overflow-x: hidden;
 }
 
-/* Subtle crosshatch background */
+/* Subtle grid background */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
   background-image:
-    linear-gradient(var(--accent-glow) 1px, transparent 1px),
-    linear-gradient(90deg, var(--accent-glow) 1px, transparent 1px);
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
   background-size: 48px 48px;
-  opacity: 0.15;
   pointer-events: none;
   z-index: 0;
 }
 
-/* Radial glow from top */
-body::after {
-  content: '';
-  position: fixed;
-  top: -40%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 120%;
-  height: 60%;
-  background: radial-gradient(ellipse, var(--accent-glow) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: 0;
+[data-theme="light"] body::before {
+  background-image:
+    linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px);
 }
 
 a {
@@ -704,7 +695,6 @@ ul, ol {
   color: var(--accent);
   border: 1px solid var(--accent-border);
   margin-bottom: 1rem;
-  box-shadow: 0 0 12px var(--accent-glow);
 }
 
 .member-name {
@@ -980,27 +970,6 @@ ul, ol {
   .nav-actions {
     gap: 0.75rem;
   }
-}
-
-/* Smooth theme transition */
-body,
-body::before,
-body::after,
-.nav,
-.nav-mobile,
-.card,
-.member,
-.focus-item,
-.footer,
-.btn,
-.tag,
-.theme-toggle,
-.member-avatar {
-  transition:
-    background-color 0.35s var(--ease),
-    border-color 0.35s var(--ease),
-    color 0.35s var(--ease),
-    box-shadow 0.35s var(--ease);
 }
 
 /* --- Animations --- */
