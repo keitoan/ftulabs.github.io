@@ -171,6 +171,187 @@ Supported formats: `.mp3`, `.ogg`, `.wav`. For podcast-style content, consider h
 
 The site uses a dark terminal-style design with **red** as the accent color. All theme colors are defined as CSS custom properties in `css/style.css` under the `:root` selector. To change the accent color, update the `--accent`, `--accent-hover`, `--accent-bg`, and `--accent-border` variables.
 
+## Contributing Guide (For Students)
+
+Follow these steps every time you make a change. This workflow mirrors how professional teams ship code — learning it now will serve you in internships, open-source projects, and your career.
+
+### 1. Clone the Repo (First Time Only)
+
+```bash
+git clone https://github.com/ftulabs/ftulabs.github.io.git
+cd ftulabs.github.io
+```
+
+If you already cloned it before, make sure you're up to date:
+
+```bash
+git checkout main
+git pull origin main
+```
+
+### 2. Create a Branch
+
+**Never work directly on `main`.** Create a descriptive branch for your change:
+
+```bash
+git checkout -b <type>/<short-description>
+```
+
+Branch naming conventions:
+
+| Type        | When to use                        | Example                            |
+| ----------- | ---------------------------------- | ---------------------------------- |
+| `feature/`  | Adding something new               | `feature/add-member-nguyen-van-a`  |
+| `fix/`      | Fixing a bug or typo               | `fix/broken-nav-link`              |
+| `blog/`     | Adding or editing a blog post      | `blog/intro-to-ml-post`            |
+| `docs/`     | Updating documentation             | `docs/update-readme`               |
+| `refactor/` | Restructuring without new features | `refactor/css-variables`           |
+
+> **Why branches?** They isolate your work so a half-finished change never breaks the live site. They also make code review possible — your teammates can see exactly what changed.
+
+### 3. Write Clean Code
+
+Before you commit anything, make sure your code is clean and readable. Here are the rules:
+
+#### Use Meaningful Names
+
+```html
+<!-- Bad -->
+<div class="x1">
+  <div class="a"></div>
+</div>
+
+<!-- Good -->
+<div class="member-card">
+  <div class="member-avatar"></div>
+</div>
+```
+
+#### Comment the "Why", Not the "What"
+
+Comments should explain **why** something exists or **why** a non-obvious decision was made — not repeat what the code already says.
+
+```css
+/* Bad — restates what the code does */
+/* Set color to red */
+color: #8B1A1A;
+
+/* Good — explains the reason behind the choice */
+/* FTU official crimson — matches university branding guidelines */
+color: #8B1A1A;
+```
+
+```html
+<!-- Bad — obvious from the tag itself -->
+<!-- This is a paragraph -->
+<p>Welcome to FTU Labs.</p>
+
+<!-- Good — explains a decision that isn't obvious -->
+<!-- Using <details> instead of JS toggle for accessibility and zero-JS support -->
+<details>
+  <summary>Show more</summary>
+  <p>Additional content here.</p>
+</details>
+```
+
+```js
+// Bad — describes what the code does
+// Loop through items
+items.forEach(item => { ... });
+
+// Good — explains intent
+// Stagger reveal animations so cards don't all appear at once
+items.forEach((item, i) => {
+  item.style.transitionDelay = `${i * 100}ms`;
+});
+```
+
+#### Keep It Consistent
+
+- Use **2-space indentation** for HTML, CSS, and JS (match the existing files).
+- Use **lowercase with hyphens** for CSS classes: `blog-title`, not `blogTitle` or `Blog_Title`.
+- Keep lines under **100 characters** when possible.
+- Remove dead code — don't comment it out "just in case" (that's what git history is for).
+
+#### Keep Commits Small and Focused
+
+Each commit should do **one thing**. If you added a team member and also fixed a typo in the blog, make two commits:
+
+```bash
+# Stage only the team page change
+git add team.html
+git commit -m "Add Nguyen Van A to team page"
+
+# Stage only the blog fix
+git add blog.html
+git commit -m "Fix typo in ML blog post title"
+```
+
+Write commit messages in the **imperative mood** (like giving an order):
+
+```
+# Good
+Add blog post about neural networks
+Fix navigation link on mobile
+Remove unused CSS class
+
+# Bad
+Added blog post
+fixed stuff
+changes
+```
+
+### 4. Push Your Branch and Open a Pull Request
+
+```bash
+git push origin <your-branch-name>
+```
+
+Then open a Pull Request (PR) on GitHub:
+
+1. Go to the repo on GitHub. You'll see a banner saying your branch was recently pushed — click **"Compare & pull request"**.
+2. Fill in the PR template:
+   - **Title:** Short and descriptive (e.g., `Add Nguyen Van A to team page`).
+   - **Description:** Explain **what** you changed and **why**. Include a screenshot if it's a visual change.
+3. **Request a review** from at least one teammate.
+4. Wait for feedback. If changes are requested, push new commits to the same branch — the PR updates automatically.
+
+You can also create a PR from the command line:
+
+```bash
+gh pr create --title "Add Nguyen Van A to team page" --body "Added new member profile with bio and links."
+```
+
+#### PR Checklist
+
+Before marking your PR as ready, verify:
+
+- [ ] I created a branch (not committing to `main` directly)
+- [ ] I tested my changes locally (opened the HTML in a browser)
+- [ ] My code follows the existing style (indentation, class naming)
+- [ ] My commits are small, focused, and have clear messages
+- [ ] I described what changed and why in the PR description
+
+### 5. After Your PR Is Merged
+
+Switch back to `main` and pull the latest changes. Delete your old branch to keep things tidy:
+
+```bash
+git checkout main
+git pull origin main
+git branch -d <your-branch-name>
+```
+
+### Quick Reference
+
+```
+main (protected — always deployable)
+ └── feature/add-member-nguyen-van-a   ← your work happens here
+      ├── commit: "Add member photo"
+      ├── commit: "Add member bio and links"
+      └── → Open PR → Code review → Merge → Done
+```
+
 ## Development
 
 No build tools required. Open any `.html` file in a browser to preview, or use a local server:
