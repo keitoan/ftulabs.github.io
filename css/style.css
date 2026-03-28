@@ -1,31 +1,33 @@
 /* ============================================
-   FTU Labs — Terminal Noir Design System
+   FTU Labs — Crimson Academic Design System
    ============================================ */
 
 :root {
-  --bg: #080808;
-  --bg-card: #0f0f0f;
-  --bg-card-hover: #131313;
-  --bg-nav: rgba(8, 8, 8, 0.88);
+  --bg: #0a0608;
+  --bg-card: #110c0e;
+  --bg-card-hover: #1a1215;
+  --bg-nav: rgba(10, 6, 8, 0.92);
 
-  --text: #d4d4d4;
-  --text-secondary: #737373;
-  --text-muted: #404040;
-  --text-heading: #f0f0f0;
+  --text: #d4ccce;
+  --text-secondary: #8a7578;
+  --text-muted: #4a3a3d;
+  --text-heading: #f2eced;
 
-  --accent: #ff3b3b;
-  --accent-hover: #ff6b6b;
-  --accent-bg: rgba(255, 59, 59, 0.06);
-  --accent-border: rgba(255, 59, 59, 0.2);
+  --accent: #C8102E;
+  --accent-hover: #e8233f;
+  --accent-dim: #8b0a1f;
+  --accent-bg: rgba(200, 16, 46, 0.08);
+  --accent-border: rgba(200, 16, 46, 0.25);
+  --accent-glow: rgba(200, 16, 46, 0.12);
 
-  --border: #1c1c1c;
-  --border-hover: #2a2a2a;
+  --border: #201518;
+  --border-hover: #2e1e22;
 
   --font: 'Geist Mono', 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
 
   --max-w: 800px;
   --max-w-wide: 1100px;
-  --nav-h: 56px;
+  --nav-h: 60px;
 
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
   --duration: 200ms;
@@ -55,15 +57,29 @@ body {
   overflow-x: hidden;
 }
 
-/* Subtle grid background */
+/* Subtle diagonal crosshatch background */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
-  background-size: 40px 40px;
+    linear-gradient(rgba(200, 16, 46, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(200, 16, 46, 0.015) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Radial glow from top */
+body::after {
+  content: '';
+  position: fixed;
+  top: -40%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120%;
+  height: 60%;
+  background: radial-gradient(ellipse, rgba(200, 16, 46, 0.04) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
 }
@@ -114,6 +130,9 @@ ul, ol {
 }
 
 .nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
   font-size: 0.9375rem;
   font-weight: 600;
   color: var(--text-heading);
@@ -123,6 +142,12 @@ ul, ol {
 
 .nav-logo:hover {
   color: var(--text-heading);
+}
+
+.nav-logo img {
+  height: 32px;
+  width: auto;
+  flex-shrink: 0;
 }
 
 .nav-logo span {
@@ -272,6 +297,16 @@ ul, ol {
   padding: 4rem 0 3rem;
 }
 
+.hero-logo {
+  margin-bottom: 1.5rem;
+}
+
+.hero-logo img {
+  height: 80px;
+  width: auto;
+  filter: drop-shadow(0 0 20px var(--accent-glow));
+}
+
 .hero-title {
   font-size: clamp(2.5rem, 6vw, 3.5rem);
   font-weight: 700;
@@ -279,16 +314,6 @@ ul, ol {
   line-height: 1.1;
   letter-spacing: -0.03em;
   margin-bottom: 1.5rem;
-}
-
-.cursor {
-  color: var(--accent);
-  animation: blink 1s step-end infinite;
-}
-
-@keyframes blink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0; }
 }
 
 .hero-subtitle {
@@ -334,7 +359,7 @@ ul, ol {
 
 .btn-primary:hover {
   background: var(--accent);
-  color: var(--bg);
+  color: #fff;
 }
 
 /* --- Page Header --- */
@@ -646,7 +671,7 @@ ul, ol {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: var(--bg-card);
+  background: var(--accent-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -655,6 +680,7 @@ ul, ol {
   color: var(--accent);
   border: 1px solid var(--accent-border);
   margin-bottom: 1rem;
+  box-shadow: 0 0 12px var(--accent-glow);
 }
 
 .member-name {
