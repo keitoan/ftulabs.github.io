@@ -1,109 +1,178 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Survival Guide for CS Students in FTU — FTU Labs</title>
-  <meta name="description" content="What CS students in FTU need to know about — from IDE setup to end-to-end project delivery.">
-  <link rel="icon" href="../img/logo.png">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/geist@1.3.1/dist/fonts/geist-mono/style.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../css/style.css">
-</head>
-<body>
-
-  <nav class="nav">
-    <div class="nav-inner">
-      <a href="../index.html" class="nav-logo"><img src="../img/logo.png" alt="FTU">FTU Labs</a>
-      <div class="nav-actions">
-        <div class="nav-links">
-          <a href="../projects.html">projects</a>
-          <a href="../team.html">team</a>
-          <a href="../research.html">research</a>
-          <a href="../blog.html">blog</a>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Survival Guide for CS Students in FTU — FTU Labs</title>
+        <meta
+            name="description"
+            content="What CS students in FTU need to know about — from IDE setup to end-to-end project delivery."
+        />
+        <link rel="icon" href="../img/logo.png" />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/geist@1.3.1/dist/fonts/geist-mono/style.css"
+        />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap"
+            rel="stylesheet"
+        />
+        <link rel="stylesheet" href="../css/style.css" />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/atom-one-dark.min.css"
+        />
+    </head>
+    <body>
+        <nav class="nav">
+            <div class="nav-inner">
+                <a href="../index.html" class="nav-logo"
+                    ><img src="../img/logo.png" alt="FTU" />FTU Labs</a
+                >
+                <div class="nav-actions">
+                    <div class="nav-links">
+                        <a href="../projects.html">projects</a>
+                        <a href="../team.html">team</a>
+                        <a href="../research.html">research</a>
+                        <a href="../blog.html">blog</a>
+                    </div>
+                    <button class="theme-toggle" aria-label="Toggle theme">
+                        <svg class="icon-moon" viewBox="0 0 24 24">
+                            <path
+                                d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
+                            />
+                        </svg>
+                        <svg class="icon-sun" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="5" />
+                            <line x1="12" y1="1" x2="12" y2="3" />
+                            <line x1="12" y1="21" x2="12" y2="23" />
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                            <line x1="1" y1="12" x2="3" y2="12" />
+                            <line x1="21" y1="12" x2="23" y2="12" />
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                        </svg>
+                    </button>
+                    <button class="nav-toggle" aria-label="Toggle menu">
+                        <span></span><span></span><span></span>
+                    </button>
+                </div>
+            </div>
+        </nav>
+        <div class="nav-mobile">
+            <a href="../projects.html">projects</a>
+            <a href="../team.html">team</a>
+            <a href="../research.html">research</a>
+            <a href="../blog.html">blog</a>
         </div>
-        <button class="theme-toggle" aria-label="Toggle theme">
-          <svg class="icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-          <svg class="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-        </button>
-        <button class="nav-toggle" aria-label="Toggle menu">
-          <span></span><span></span><span></span>
-        </button>
-      </div>
-    </div>
-  </nav>
-  <div class="nav-mobile">
-    <a href="../projects.html">projects</a>
-    <a href="../team.html">team</a>
-    <a href="../research.html">research</a>
-    <a href="../blog.html">blog</a>
-  </div>
 
-  <main class="page">
-    <div class="container">
+        <main class="page">
+            <div class="container">
+                <a href="../blog.html" class="post-back animate"
+                    >&larr; back to blog</a
+                >
 
-      <a href="../blog.html" class="post-back animate">&larr; back to blog</a>
+                <header class="post-header animate animate-d1">
+                    <h1 class="post-title">
+                        Survival Guide for CS Students in FTU
+                    </h1>
+                    <div class="post-meta">
+                        2026-03-28 &middot; FTU Labs &middot; 20 min read
+                    </div>
+                </header>
 
-      <header class="post-header animate animate-d1">
-        <h1 class="post-title">Survival Guide for CS Students in FTU</h1>
-        <div class="post-meta">2026-03-28 &middot; FTU Labs &middot; 20 min read</div>
-      </header>
+                <article class="post-content animate animate-d2">
+                    <p>
+                        This guide covers the essential skills every CS student
+                        at FTU should learn &mdash; from setting up your first
+                        IDE to shipping an end-to-end project. Each section is
+                        short, practical, and packed with resources. Bookmark
+                        this page and revisit it as you progress.
+                    </p>
 
-      <article class="post-content animate animate-d2">
-        <p>
-          This guide covers the essential skills every CS student at FTU should learn &mdash; from setting up your first IDE to shipping an end-to-end project. Each section is short, practical, and packed with resources. Bookmark this page and revisit it as you progress.
-        </p>
+                    <!-- ============================================ -->
+                    <!-- 1. IDE SETUP -->
+                    <!-- ============================================ -->
+                    <h2>1. Setting Up Your IDE</h2>
+                    <p>
+                        <strong>VS Code</strong> is the recommended editor. It's
+                        free, extensible, and works on every OS.
+                    </p>
 
-        <!-- ============================================ -->
-        <!-- 1. IDE SETUP -->
-        <!-- ============================================ -->
-        <h2>1. Setting Up Your IDE</h2>
-        <p>
-          <strong>VS Code</strong> is the recommended editor. It's free, extensible, and works on every OS.
-        </p>
-
-<pre><code># Install VS Code (Ubuntu/Debian)
+                    <pre><code class="language-bash"># Install VS Code (Ubuntu/Debian)
 sudo apt update && sudo apt install code
 
 # macOS (via Homebrew)
 brew install --cask visual-studio-code</code></pre>
 
-        <p><strong>Essential extensions</strong> &mdash; install from the Extensions sidebar (<code>Ctrl+Shift+X</code>):</p>
-        <ul>
-          <li><strong>Python</strong> &mdash; IntelliSense, linting, debugging</li>
-          <li><strong>Pylance</strong> &mdash; fast type checking</li>
-          <li><strong>GitLens</strong> &mdash; inline git blame and history</li>
-          <li><strong>Prettier</strong> &mdash; auto-format HTML/CSS/JS</li>
-          <li><strong>Remote - SSH</strong> &mdash; edit files on remote servers</li>
-          <li><strong>Live Server</strong> &mdash; hot-reload for HTML/CSS projects</li>
-        </ul>
+                    <p>
+                        <strong>Essential extensions</strong> &mdash; install
+                        from the Extensions sidebar (<code>Ctrl+Shift+X</code>):
+                    </p>
+                    <ul>
+                        <li>
+                            <strong>Python</strong> &mdash; IntelliSense,
+                            linting, debugging
+                        </li>
+                        <li>
+                            <strong>Pylance</strong> &mdash; fast type checking
+                        </li>
+                        <li>
+                            <strong>GitLens</strong> &mdash; inline git blame
+                            and history
+                        </li>
+                        <li>
+                            <strong>Prettier</strong> &mdash; auto-format
+                            HTML/CSS/JS
+                        </li>
+                        <li>
+                            <strong>Remote - SSH</strong> &mdash; edit files on
+                            remote servers
+                        </li>
+                        <li>
+                            <strong>Live Server</strong> &mdash; hot-reload for
+                            HTML/CSS projects
+                        </li>
+                    </ul>
 
-        <p><strong>Useful shortcuts</strong>:</p>
-<pre><code>Ctrl+P           # Quick file open
+                    <p><strong>Useful shortcuts</strong>:</p>
+                    <pre><code class="language-plaintext">Ctrl+P           # Quick file open
 Ctrl+Shift+P     # Command palette
 Ctrl+`            # Toggle terminal
 Ctrl+D            # Select next occurrence
 Alt+Up/Down       # Move line up/down
 Ctrl+Shift+K      # Delete line</code></pre>
 
-        <p><strong>Resources</strong>:</p>
-        <ul>
-          <li><a href="https://code.visualstudio.com/docs/getstarted/tips-and-tricks">VS Code Tips and Tricks (official docs)</a></li>
-          <li><a href="https://www.youtube.com/watch?v=ifTF3ags0XI">Fireship &mdash; VS Code in 100 Seconds</a></li>
-        </ul>
+                    <p><strong>Resources</strong>:</p>
+                    <ul>
+                        <li>
+                            <a
+                                href="https://code.visualstudio.com/docs/getstarted/tips-and-tricks"
+                                >VS Code Tips and Tricks (official docs)</a
+                            >
+                        </li>
+                        <li>
+                            <a
+                                href="https://www.youtube.com/watch?v=ifTF3ags0XI"
+                                >Fireship &mdash; VS Code in 100 Seconds</a
+                            >
+                        </li>
+                    </ul>
 
-        <!-- ============================================ -->
-        <!-- 2. VIRTUAL ENVIRONMENTS -->
-        <!-- ============================================ -->
-        <h2>2. Virtual Environments</h2>
-        <p>
-          Never install packages globally. Use virtual environments to isolate dependencies per project.
-        </p>
+                    <!-- ============================================ -->
+                    <!-- 2. VIRTUAL ENVIRONMENTS -->
+                    <!-- ============================================ -->
+                    <h2>2. Virtual Environments</h2>
+                    <p>
+                        Never install packages globally. Use virtual
+                        environments to isolate dependencies per project.
+                    </p>
 
-        <h3>Option A: venv (built-in)</h3>
-<pre><code># Create
+                    <h3>Option A: venv (built-in)</h3>
+                    <pre><code class="language-bash"># Create
 python -m venv .venv
 
 # Activate
@@ -122,8 +191,8 @@ pip install -r requirements.txt
 # Deactivate
 deactivate</code></pre>
 
-        <h3>Option B: conda (for data science / CUDA)</h3>
-<pre><code># Install Miniconda (lightweight)
+                    <h3>Option B: conda (for data science / CUDA)</h3>
+                    <pre><code class="language-bash"># Install Miniconda (lightweight)
 # https://docs.conda.io/en/latest/miniconda.html
 
 # Create environment
@@ -139,8 +208,8 @@ conda env export > environment.yml
 # Reproduce
 conda env create -f environment.yml</code></pre>
 
-        <h3>Option C: uv (fast, modern)</h3>
-<pre><code># Install uv
+                    <h3>Option C: uv (fast, modern)</h3>
+                    <pre><code class="language-bash"># Install uv
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # Create project with virtual env
@@ -153,24 +222,42 @@ uv add numpy pandas torch
 # Sync (install everything from pyproject.toml)
 uv sync</code></pre>
 
-        <blockquote>
-          Rule of thumb: use <strong>venv</strong> for simple projects, <strong>conda</strong> when you need CUDA/system libs, and <strong>uv</strong> when you want speed.
-        </blockquote>
+                    <blockquote>
+                        Rule of thumb: use <strong>venv</strong> for simple
+                        projects, <strong>conda</strong> when you need
+                        CUDA/system libs, and <strong>uv</strong> when you want
+                        speed.
+                    </blockquote>
 
-        <p><strong>Resources</strong>:</p>
-        <ul>
-          <li><a href="https://docs.python.org/3/library/venv.html">Python venv docs</a></li>
-          <li><a href="https://docs.astral.sh/uv/">uv documentation</a></li>
-          <li><a href="https://www.youtube.com/watch?v=31WU0Dhw4sk">Fireship &mdash; Python Virtual Envs Explained</a></li>
-        </ul>
+                    <p><strong>Resources</strong>:</p>
+                    <ul>
+                        <li>
+                            <a
+                                href="https://docs.python.org/3/library/venv.html"
+                                >Python venv docs</a
+                            >
+                        </li>
+                        <li>
+                            <a href="https://docs.astral.sh/uv/"
+                                >uv documentation</a
+                            >
+                        </li>
+                        <li>
+                            <a
+                                href="https://www.youtube.com/watch?v=31WU0Dhw4sk"
+                                >Fireship &mdash; Python Virtual Envs
+                                Explained</a
+                            >
+                        </li>
+                    </ul>
 
-        <!-- ============================================ -->
-        <!-- 3. GITHUB, CLEAN CODE, CONTRIBUTING -->
-        <!-- ============================================ -->
-        <h2>3. GitHub, Clean Code &amp; Contributing</h2>
+                    <!-- ============================================ -->
+                    <!-- 3. GITHUB, CLEAN CODE, CONTRIBUTING -->
+                    <!-- ============================================ -->
+                    <h2>3. GitHub, Clean Code &amp; Contributing</h2>
 
-        <h3>3.1 Create a GitHub Personal Access Token</h3>
-<pre><code># Go to: GitHub &rarr; Settings &rarr; Developer settings &rarr; Personal access tokens &rarr; Fine-grained tokens
+                    <h3>3.1 Create a GitHub Personal Access Token</h3>
+                    <pre><code class="language-bash"># Go to: GitHub &rarr; Settings &rarr; Developer settings &rarr; Personal access tokens &rarr; Fine-grained tokens
 # Select permissions: Contents (read/write), Pull requests (read/write)
 # Copy the token
 
@@ -186,8 +273,8 @@ ssh-keygen -t ed25519 -C "you@example.com"
 cat ~/.ssh/id_ed25519.pub
 # Add the public key at: GitHub &rarr; Settings &rarr; SSH keys</code></pre>
 
-        <h3>3.2 Git workflow basics</h3>
-<pre><code># Start from latest main
+                    <h3>3.2 Git workflow basics</h3>
+                    <pre><code class="language-bash"># Start from latest main
 git checkout main && git pull
 
 # Create feature branch
@@ -201,8 +288,8 @@ git commit -m "Add login page with form validation"
 git push -u origin feature/add-login-page
 gh pr create --title "Add login page" --body "Implements #12"</code></pre>
 
-        <h3>3.3 Writing clean code</h3>
-<pre><code># BAD &mdash; no context, magic numbers, no types
+                    <h3>3.3 Writing clean code</h3>
+                    <pre><code class="language-python"># BAD &mdash; no context, magic numbers, no types
 def calc(x):
     return x * 1.1
 
@@ -211,48 +298,107 @@ def calculate_price_with_tax(base_price: float, tax_rate: float = 0.1) -> float:
     """Return the total price including tax."""
     return base_price * (1 + tax_rate)</code></pre>
 
-        <p><strong>Comment rules</strong>:</p>
-        <ul>
-          <li>Comment <em>why</em>, not <em>what</em>. The code tells you what; comments explain intent.</li>
-          <li>Use docstrings for public functions. Use inline comments sparingly.</li>
-          <li>Delete commented-out code &mdash; that's what git history is for.</li>
-        </ul>
+                    <p><strong>Comment rules</strong>:</p>
+                    <ul>
+                        <li>
+                            Comment <em>why</em>, not <em>what</em>. The code
+                            tells you what; comments explain intent.
+                        </li>
+                        <li>
+                            Use docstrings for public functions. Use inline
+                            comments sparingly.
+                        </li>
+                        <li>
+                            Delete commented-out code &mdash; that's what git
+                            history is for.
+                        </li>
+                    </ul>
 
-        <h3>3.4 Contribution process (for FTU Labs repos)</h3>
-        <ol>
-          <li><strong>Fork</strong> the repo (or clone if you have write access)</li>
-          <li><strong>Create a branch</strong> from <code>main</code> with a descriptive name</li>
-          <li><strong>Write code + tests</strong> &mdash; follow existing style</li>
-          <li><strong>Commit</strong> with clear messages (<code>feat:</code>, <code>fix:</code>, <code>docs:</code> prefixes)</li>
-          <li><strong>Push</strong> and open a <strong>Pull Request</strong></li>
-          <li><strong>Address review feedback</strong>, then merge</li>
-        </ol>
+                    <h3>3.4 Contribution process (for FTU Labs repos)</h3>
+                    <ol>
+                        <li>
+                            <strong>Fork</strong> the repo (or clone if you have
+                            write access)
+                        </li>
+                        <li>
+                            <strong>Create a branch</strong> from
+                            <code>main</code> with a descriptive name
+                        </li>
+                        <li>
+                            <strong>Write code + tests</strong> &mdash; follow
+                            existing style
+                        </li>
+                        <li>
+                            <strong>Commit</strong> with clear messages
+                            (<code>feat:</code>, <code>fix:</code>,
+                            <code>docs:</code> prefixes)
+                        </li>
+                        <li>
+                            <strong>Push</strong> and open a
+                            <strong>Pull Request</strong>
+                        </li>
+                        <li>
+                            <strong>Address review feedback</strong>, then merge
+                        </li>
+                    </ol>
 
-<pre><code># Conventional commit examples
+                    <pre><code class="language-bash"># Conventional commit examples
 git commit -m "feat: add user authentication endpoint"
 git commit -m "fix: resolve race condition in queue worker"
 git commit -m "docs: update API reference for v2 routes"
 git commit -m "refactor: extract validation logic into utils"</code></pre>
 
-        <p><strong>Resources</strong>:</p>
-        <ul>
-          <li><a href="https://docs.github.com/en/get-started/quickstart">GitHub Quickstart (official)</a></li>
-          <li><a href="https://www.conventionalcommits.org/">Conventional Commits spec</a></li>
-          <li><a href="https://www.youtube.com/watch?v=RGOj5yH7evk">freeCodeCamp &mdash; Git and GitHub for Beginners (1h)</a></li>
-          <li><a href="https://www.youtube.com/watch?v=Uszj_k0DGsg">Fireship &mdash; Git in 100 Seconds</a></li>
-          <li><a href="https://peps.python.org/pep-0008/">PEP 8 &mdash; Python Style Guide</a></li>
-          <li><a href="https://google.github.io/styleguide/">Google Style Guides (Python, C++, JS, etc.)</a></li>
-        </ul>
+                    <p><strong>Resources</strong>:</p>
+                    <ul>
+                        <li>
+                            <a
+                                href="https://docs.github.com/en/get-started/quickstart"
+                                >GitHub Quickstart (official)</a
+                            >
+                        </li>
+                        <li>
+                            <a href="https://www.conventionalcommits.org/"
+                                >Conventional Commits spec</a
+                            >
+                        </li>
+                        <li>
+                            <a
+                                href="https://www.youtube.com/watch?v=RGOj5yH7evk"
+                                >freeCodeCamp &mdash; Git and GitHub for
+                                Beginners (1h)</a
+                            >
+                        </li>
+                        <li>
+                            <a
+                                href="https://www.youtube.com/watch?v=Uszj_k0DGsg"
+                                >Fireship &mdash; Git in 100 Seconds</a
+                            >
+                        </li>
+                        <li>
+                            <a href="https://peps.python.org/pep-0008/"
+                                >PEP 8 &mdash; Python Style Guide</a
+                            >
+                        </li>
+                        <li>
+                            <a href="https://google.github.io/styleguide/"
+                                >Google Style Guides (Python, C++, JS, etc.)</a
+                            >
+                        </li>
+                    </ul>
 
-        <!-- ============================================ -->
-        <!-- 4. LATEX, OVERLEAF, AND ARXIV -->
-        <!-- ============================================ -->
-        <h2>4. LaTeX, Overleaf &amp; arXiv</h2>
+                    <!-- ============================================ -->
+                    <!-- 4. LATEX, OVERLEAF, AND ARXIV -->
+                    <!-- ============================================ -->
+                    <h2>4. LaTeX, Overleaf &amp; arXiv</h2>
 
-        <h3>4.1 LaTeX basics</h3>
-        <p>LaTeX is the standard for writing academic papers. Use <a href="https://www.overleaf.com/">Overleaf</a> for collaborative editing (no local install needed).</p>
+                    <h3>4.1 LaTeX basics</h3>
+                    <p>
+                        LaTeX is the standard for writing academic papers. Use
+                        <a href="https://www.overleaf.com/">Overleaf</a> for
+                        collaborative editing (no local install needed).
+                    </p>
 
-<pre><code>\documentclass{article}
+                    <pre><code class="language-latex">\documentclass{article}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath, amssymb, graphicx, hyperref}
 
@@ -287,16 +433,31 @@ A figure:
 \bibliography{references}
 \end{document}</code></pre>
 
-        <h3>4.2 Tips for Overleaf</h3>
-        <ul>
-          <li>Use <strong>Overleaf Git integration</strong> &mdash; clone your Overleaf project via git, edit locally, push back</li>
-          <li>Start from <strong>conference templates</strong>: NeurIPS, ICML, ACL, AAAI all have Overleaf templates</li>
-          <li>Use <code>\input{sections/method.tex}</code> to split large papers into files</li>
-          <li>Manage references with <code>.bib</code> files &mdash; export from Google Scholar or Semantic Scholar</li>
-        </ul>
+                    <h3>4.2 Tips for Overleaf</h3>
+                    <ul>
+                        <li>
+                            Use
+                            <strong>Overleaf Git integration</strong> &mdash;
+                            clone your Overleaf project via git, edit locally,
+                            push back
+                        </li>
+                        <li>
+                            Start from <strong>conference templates</strong>:
+                            NeurIPS, ICML, ACL, AAAI all have Overleaf templates
+                        </li>
+                        <li>
+                            Use <code>\input{sections/method.tex}</code> to
+                            split large papers into files
+                        </li>
+                        <li>
+                            Manage references with <code>.bib</code> files
+                            &mdash; export from Google Scholar or Semantic
+                            Scholar
+                        </li>
+                    </ul>
 
-        <h3>4.3 Submitting to arXiv</h3>
-<pre><code># Prepare submission directory
+                    <h3>4.3 Submitting to arXiv</h3>
+                    <pre><code class="language-bash"># Prepare submission directory
 mkdir arxiv_submission && cd arxiv_submission
 
 # Copy source files (not the PDF)
@@ -312,22 +473,47 @@ tar -czf submission.tar.gz *.tex *.bib *.bst figures/
 # Choose category (cs.CL, cs.LG, cs.CV, etc.)
 # arXiv compiles the LaTeX on their servers</code></pre>
 
-        <p><strong>Resources</strong>:</p>
-        <ul>
-          <li><a href="https://www.overleaf.com/learn/latex/Learn_LaTeX_in_30_minutes">Overleaf &mdash; Learn LaTeX in 30 minutes</a></li>
-          <li><a href="https://www.youtube.com/watch?v=VhmkLrOjLsw">LaTeX Tutorial for Beginners (Michelle Krummel)</a></li>
-          <li><a href="https://info.arxiv.org/help/submit/index.html">arXiv submission guide</a></li>
-          <li><a href="https://github.com/Wookai/paper-tips-and-tricks">paper-tips-and-tricks (GitHub)</a></li>
-        </ul>
+                    <p><strong>Resources</strong>:</p>
+                    <ul>
+                        <li>
+                            <a
+                                href="https://www.overleaf.com/learn/latex/Learn_LaTeX_in_30_minutes"
+                                >Overleaf &mdash; Learn LaTeX in 30 minutes</a
+                            >
+                        </li>
+                        <li>
+                            <a
+                                href="https://www.youtube.com/watch?v=VhmkLrOjLsw"
+                                >LaTeX Tutorial for Beginners (Michelle
+                                Krummel)</a
+                            >
+                        </li>
+                        <li>
+                            <a
+                                href="https://info.arxiv.org/help/submit/index.html"
+                                >arXiv submission guide</a
+                            >
+                        </li>
+                        <li>
+                            <a
+                                href="https://github.com/Wookai/paper-tips-and-tricks"
+                                >paper-tips-and-tricks (GitHub)</a
+                            >
+                        </li>
+                    </ul>
 
-        <!-- ============================================ -->
-        <!-- 5. PROJECT WEBSITE -->
-        <!-- ============================================ -->
-        <h2>5. Creating a Project Website</h2>
-        <p>Every serious project deserves a landing page. <strong>GitHub Pages</strong> is the easiest way &mdash; free hosting, custom domain support, deploys on push.</p>
+                    <!-- ============================================ -->
+                    <!-- 5. PROJECT WEBSITE -->
+                    <!-- ============================================ -->
+                    <h2>5. Creating a Project Website</h2>
+                    <p>
+                        Every serious project deserves a landing page.
+                        <strong>GitHub Pages</strong> is the easiest way &mdash;
+                        free hosting, custom domain support, deploys on push.
+                    </p>
 
-        <h3>5.1 Static HTML (simplest)</h3>
-<pre><code># Create repo: username.github.io or project-name
+                    <h3>5.1 Static HTML (simplest)</h3>
+                    <pre><code class="language-bash"># Create repo: username.github.io or project-name
 mkdir my-project-site && cd my-project-site
 git init
 
@@ -355,15 +541,29 @@ HTML
 
 # Push and enable GitHub Pages in repo Settings &rarr; Pages &rarr; main branch</code></pre>
 
-        <h3>5.2 Using a static site generator</h3>
-        <ul>
-          <li><a href="https://docusaurus.io/">Docusaurus</a> &mdash; great for docs-heavy projects (React-based)</li>
-          <li><a href="https://jekyllrb.com/">Jekyll</a> &mdash; GitHub Pages native support, Markdown-based</li>
-          <li><a href="https://gohugo.io/">Hugo</a> &mdash; fastest build times, Go-based</li>
-          <li><a href="https://nerfies.github.io/">Nerfies template</a> &mdash; popular academic project page template</li>
-        </ul>
+                    <h3>5.2 Using a static site generator</h3>
+                    <ul>
+                        <li>
+                            <a href="https://docusaurus.io/">Docusaurus</a>
+                            &mdash; great for docs-heavy projects (React-based)
+                        </li>
+                        <li>
+                            <a href="https://jekyllrb.com/">Jekyll</a> &mdash;
+                            GitHub Pages native support, Markdown-based
+                        </li>
+                        <li>
+                            <a href="https://gohugo.io/">Hugo</a> &mdash;
+                            fastest build times, Go-based
+                        </li>
+                        <li>
+                            <a href="https://nerfies.github.io/"
+                                >Nerfies template</a
+                            >
+                            &mdash; popular academic project page template
+                        </li>
+                    </ul>
 
-<pre><code># Example: deploy with GitHub Actions (add .github/workflows/deploy.yml)
+                    <pre><code class="language-yaml"># Example: deploy with GitHub Actions (add .github/workflows/deploy.yml)
 name: Deploy
 on:
   push:
@@ -380,21 +580,38 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build</code></pre>
 
-        <p><strong>Resources</strong>:</p>
-        <ul>
-          <li><a href="https://pages.github.com/">GitHub Pages docs</a></li>
-          <li><a href="https://www.youtube.com/watch?v=QyFcl_Fba-k">Fireship &mdash; GitHub Pages in 100 Seconds</a></li>
-          <li><a href="https://github.com/eliahuhorwitz/Academic-project-page-template">Academic Project Page Template (GitHub)</a></li>
-        </ul>
+                    <p><strong>Resources</strong>:</p>
+                    <ul>
+                        <li>
+                            <a href="https://pages.github.com/"
+                                >GitHub Pages docs</a
+                            >
+                        </li>
+                        <li>
+                            <a
+                                href="https://www.youtube.com/watch?v=QyFcl_Fba-k"
+                                >Fireship &mdash; GitHub Pages in 100 Seconds</a
+                            >
+                        </li>
+                        <li>
+                            <a
+                                href="https://github.com/eliahuhorwitz/Academic-project-page-template"
+                                >Academic Project Page Template (GitHub)</a
+                            >
+                        </li>
+                    </ul>
 
-        <!-- ============================================ -->
-        <!-- 6. AI TOOLS IN YOUR IDE -->
-        <!-- ============================================ -->
-        <h2>6. AI Tools &amp; Productivity Setup</h2>
+                    <!-- ============================================ -->
+                    <!-- 6. AI TOOLS IN YOUR IDE -->
+                    <!-- ============================================ -->
+                    <h2>6. AI Tools &amp; Productivity Setup</h2>
 
-        <h3>6.1 Google Colab</h3>
-        <p>Free GPU/TPU notebooks. Perfect for experiments before committing to local setup.</p>
-<pre><code># Mount Google Drive in Colab
+                    <h3>6.1 Google Colab</h3>
+                    <p>
+                        Free GPU/TPU notebooks. Perfect for experiments before
+                        committing to local setup.
+                    </p>
+                    <pre><code class="language-python"># Mount Google Drive in Colab
 from google.colab import drive
 drive.mount('/content/drive')
 
@@ -403,14 +620,28 @@ drive.mount('/content/drive')
 
 # Check GPU
 !nvidia-smi</code></pre>
-        <p>Pro tip: use <code>Colab Pro</code> for longer runtimes and A100 access. Connect Colab to your local runtime via <code>jupyter_http_over_ws</code> for heavier workloads.</p>
+                    <p>
+                        Pro tip: use <code>Colab Pro</code> for longer runtimes
+                        and A100 access. Connect Colab to your local runtime via
+                        <code>jupyter_http_over_ws</code> for heavier workloads.
+                    </p>
 
-        <h3>6.2 AI coding assistants</h3>
-        <ul>
-          <li><strong>GitHub Copilot</strong> &mdash; free for students via <a href="https://education.github.com/pack">GitHub Student Developer Pack</a>. Install the VS Code extension.</li>
-          <li><strong>Claude Code</strong> &mdash; Anthropic's CLI agent. Reads your codebase, writes code, runs commands.</li>
-        </ul>
-<pre><code># Install Claude Code
+                    <h3>6.2 AI coding assistants</h3>
+                    <ul>
+                        <li>
+                            <strong>GitHub Copilot</strong> &mdash; free for
+                            students via
+                            <a href="https://education.github.com/pack"
+                                >GitHub Student Developer Pack</a
+                            >. Install the VS Code extension.
+                        </li>
+                        <li>
+                            <strong>Claude Code</strong> &mdash; Anthropic's CLI
+                            agent. Reads your codebase, writes code, runs
+                            commands.
+                        </li>
+                    </ul>
+                    <pre><code class="language-bash"># Install Claude Code
 npm install -g @anthropic-ai/claude-code
 
 # Run in your project directory
@@ -422,9 +653,13 @@ claude
 > "Refactor this function to use async/await"
 > "Explain what this CUDA kernel does"</code></pre>
 
-        <h3>6.3 MCP (Model Context Protocol) servers</h3>
-        <p>MCP lets AI assistants connect to external tools &mdash; databases, APIs, file systems, browsers. Think of it as plugins for AI.</p>
-<pre><code>// .claude/settings.json &mdash; example MCP config
+                    <h3>6.3 MCP (Model Context Protocol) servers</h3>
+                    <p>
+                        MCP lets AI assistants connect to external tools &mdash;
+                        databases, APIs, file systems, browsers. Think of it as
+                        plugins for AI.
+                    </p>
+                    <pre><code class="language-json">// .claude/settings.json &mdash; example MCP config
 {
   "mcpServers": {
     "filesystem": {
@@ -439,15 +674,27 @@ claude
   }
 }</code></pre>
 
-        <h3>6.4 Other useful tools</h3>
-        <ul>
-          <li><strong>Cursor</strong> &mdash; AI-native code editor (VS Code fork with built-in AI)</li>
-          <li><strong>WandB</strong> &mdash; experiment tracking for ML (<code>pip install wandb</code>)</li>
-          <li><strong>DVC</strong> &mdash; version control for data and models (<code>pip install dvc</code>)</li>
-          <li><strong>pre-commit</strong> &mdash; auto-format and lint on every commit</li>
-        </ul>
+                    <h3>6.4 Other useful tools</h3>
+                    <ul>
+                        <li>
+                            <strong>Cursor</strong> &mdash; AI-native code
+                            editor (VS Code fork with built-in AI)
+                        </li>
+                        <li>
+                            <strong>WandB</strong> &mdash; experiment tracking
+                            for ML (<code>pip install wandb</code>)
+                        </li>
+                        <li>
+                            <strong>DVC</strong> &mdash; version control for
+                            data and models (<code>pip install dvc</code>)
+                        </li>
+                        <li>
+                            <strong>pre-commit</strong> &mdash; auto-format and
+                            lint on every commit
+                        </li>
+                    </ul>
 
-<pre><code># Setup pre-commit hooks
+                    <pre><code class="language-yaml"># Setup pre-commit hooks
 pip install pre-commit
 
 # .pre-commit-config.yaml
@@ -464,36 +711,81 @@ repos:
 # Install hooks
 pre-commit install</code></pre>
 
-        <p><strong>Resources</strong>:</p>
-        <ul>
-          <li><a href="https://colab.research.google.com/">Google Colab</a></li>
-          <li><a href="https://docs.github.com/en/copilot">GitHub Copilot docs</a></li>
-          <li><a href="https://docs.anthropic.com/en/docs/claude-code">Claude Code docs</a></li>
-          <li><a href="https://modelcontextprotocol.io/">MCP specification</a></li>
-          <li><a href="https://www.youtube.com/watch?v=9X1sHPMRiG8">MCP Explained (YouTube)</a></li>
-        </ul>
+                    <p><strong>Resources</strong>:</p>
+                    <ul>
+                        <li>
+                            <a href="https://colab.research.google.com/"
+                                >Google Colab</a
+                            >
+                        </li>
+                        <li>
+                            <a href="https://docs.github.com/en/copilot"
+                                >GitHub Copilot docs</a
+                            >
+                        </li>
+                        <li>
+                            <a
+                                href="https://docs.anthropic.com/en/docs/claude-code"
+                                >Claude Code docs</a
+                            >
+                        </li>
+                        <li>
+                            <a href="https://modelcontextprotocol.io/"
+                                >MCP specification</a
+                            >
+                        </li>
+                        <li>
+                            <a
+                                href="https://www.youtube.com/watch?v=9X1sHPMRiG8"
+                                >MCP Explained (YouTube)</a
+                            >
+                        </li>
+                    </ul>
 
-        <!-- ============================================ -->
-        <!-- 7. SYSTEM DESIGN -->
-        <!-- ============================================ -->
-        <h2>7. Learning System Design</h2>
-        <p>
-          System design is the skill of architecting software that scales. Even if you're not interviewing, understanding these patterns makes you a better engineer.
-        </p>
+                    <!-- ============================================ -->
+                    <!-- 7. SYSTEM DESIGN -->
+                    <!-- ============================================ -->
+                    <h2>7. Learning System Design</h2>
+                    <p>
+                        System design is the skill of architecting software that
+                        scales. Even if you're not interviewing, understanding
+                        these patterns makes you a better engineer.
+                    </p>
 
-        <h3>7.1 Core concepts to learn (in order)</h3>
-        <ol>
-          <li><strong>Client-Server model</strong> &mdash; HTTP, REST APIs, request/response cycle</li>
-          <li><strong>Databases</strong> &mdash; SQL vs NoSQL, indexing, replication, sharding</li>
-          <li><strong>Caching</strong> &mdash; Redis, CDNs, cache invalidation strategies</li>
-          <li><strong>Load balancing</strong> &mdash; round-robin, consistent hashing, health checks</li>
-          <li><strong>Message queues</strong> &mdash; Kafka, RabbitMQ, pub/sub patterns</li>
-          <li><strong>Microservices vs monolith</strong> &mdash; trade-offs, when to split</li>
-          <li><strong>CAP theorem</strong> &mdash; consistency, availability, partition tolerance</li>
-        </ol>
+                    <h3>7.1 Core concepts to learn (in order)</h3>
+                    <ol>
+                        <li>
+                            <strong>Client-Server model</strong> &mdash; HTTP,
+                            REST APIs, request/response cycle
+                        </li>
+                        <li>
+                            <strong>Databases</strong> &mdash; SQL vs NoSQL,
+                            indexing, replication, sharding
+                        </li>
+                        <li>
+                            <strong>Caching</strong> &mdash; Redis, CDNs, cache
+                            invalidation strategies
+                        </li>
+                        <li>
+                            <strong>Load balancing</strong> &mdash; round-robin,
+                            consistent hashing, health checks
+                        </li>
+                        <li>
+                            <strong>Message queues</strong> &mdash; Kafka,
+                            RabbitMQ, pub/sub patterns
+                        </li>
+                        <li>
+                            <strong>Microservices vs monolith</strong> &mdash;
+                            trade-offs, when to split
+                        </li>
+                        <li>
+                            <strong>CAP theorem</strong> &mdash; consistency,
+                            availability, partition tolerance
+                        </li>
+                    </ol>
 
-        <h3>7.2 Practice pattern</h3>
-<pre><code># For each system design problem, follow this framework:
+                    <h3>7.2 Practice pattern</h3>
+                    <pre><code class="language-plaintext"># For each system design problem, follow this framework:
 
 1. REQUIREMENTS     &rarr; What does the system do? (functional + non-functional)
 2. ESTIMATION       &rarr; How much data? How many users? QPS?
@@ -507,26 +799,53 @@ pre-commit install</code></pre>
 - Components: API gateway &rarr; shortening service &rarr; DB (key-value)
 - Key decision: base62 encoding vs hash, read-heavy = cache layer</code></pre>
 
-        <p><strong>Resources</strong>:</p>
-        <ul>
-          <li><a href="https://github.com/donnemartin/system-design-primer">system-design-primer (GitHub, 260k+ stars)</a></li>
-          <li><a href="https://github.com/ByteByteGoHq/system-design-101">ByteByteGo &mdash; System Design 101</a></li>
-          <li><a href="https://www.youtube.com/c/ByteByteGo">ByteByteGo YouTube channel</a></li>
-          <li><a href="https://www.youtube.com/watch?v=F2FmTdLtb_4">Hussein Nasser &mdash; System Design Full Course</a></li>
-          <li>Book: <em>Designing Data-Intensive Applications</em> by Martin Kleppmann</li>
-          <li>Book: <em>System Design Interview</em> by Alex Xu</li>
-        </ul>
+                    <p><strong>Resources</strong>:</p>
+                    <ul>
+                        <li>
+                            <a
+                                href="https://github.com/donnemartin/system-design-primer"
+                                >system-design-primer (GitHub, 260k+ stars)</a
+                            >
+                        </li>
+                        <li>
+                            <a
+                                href="https://github.com/ByteByteGoHq/system-design-101"
+                                >ByteByteGo &mdash; System Design 101</a
+                            >
+                        </li>
+                        <li>
+                            <a href="https://www.youtube.com/c/ByteByteGo"
+                                >ByteByteGo YouTube channel</a
+                            >
+                        </li>
+                        <li>
+                            <a
+                                href="https://www.youtube.com/watch?v=F2FmTdLtb_4"
+                                >Hussein Nasser &mdash; System Design Full
+                                Course</a
+                            >
+                        </li>
+                        <li>
+                            Book:
+                            <em>Designing Data-Intensive Applications</em> by
+                            Martin Kleppmann
+                        </li>
+                        <li>
+                            Book: <em>System Design Interview</em> by Alex Xu
+                        </li>
+                    </ul>
 
-        <!-- ============================================ -->
-        <!-- 8. END-TO-END PROJECT -->
-        <!-- ============================================ -->
-        <h2>8. End-to-End Project: From Concept to CI/CD</h2>
-        <p>
-          This is where everything comes together. Here's the full lifecycle of a real project.
-        </p>
+                    <!-- ============================================ -->
+                    <!-- 8. END-TO-END PROJECT -->
+                    <!-- ============================================ -->
+                    <h2>8. End-to-End Project: From Concept to CI/CD</h2>
+                    <p>
+                        This is where everything comes together. Here's the full
+                        lifecycle of a real project.
+                    </p>
 
-        <h3>Phase 1: Concept &amp; Planning</h3>
-<pre><code># Define the problem
+                    <h3>Phase 1: Concept &amp; Planning</h3>
+                    <pre><code class="language-plaintext"># Define the problem
 - What problem are you solving?
 - Who is the user?
 - What exists already? (literature review / competitor analysis)
@@ -554,8 +873,8 @@ my-project/
 │       └── ci.yml
 └── .gitignore</code></pre>
 
-        <h3>Phase 2: System Design</h3>
-<pre><code># Draw your architecture (use draw.io, Excalidraw, or Mermaid)
+                    <h3>Phase 2: System Design</h3>
+                    <pre><code class="language-plaintext"># Draw your architecture (use draw.io, Excalidraw, or Mermaid)
 
 # Example: ML inference service
 ┌─────────┐     ┌───────────┐     ┌──────────┐
@@ -575,8 +894,8 @@ my-project/
 }
 # Response: { "label": "positive", "confidence": 0.94 }</code></pre>
 
-        <h3>Phase 3: Implementation</h3>
-<pre><code># Use branches for each feature
+                    <h3>Phase 3: Implementation</h3>
+                    <pre><code class="language-python"># Use branches for each feature
 git checkout -b feat/model-inference
 
 # Write tests FIRST (or alongside)
@@ -589,8 +908,8 @@ def test_predict_returns_label():
 # Run tests locally before pushing
 pytest tests/ -v</code></pre>
 
-        <h3>Phase 4: CI/CD Pipeline</h3>
-<pre><code># .github/workflows/ci.yml
+                    <h3>Phase 4: CI/CD Pipeline</h3>
+                    <pre><code class="language-yaml"># .github/workflows/ci.yml
 name: CI
 on: [push, pull_request]
 
@@ -617,8 +936,8 @@ jobs:
           echo "Deploy step here"
           # e.g., docker build, push to registry, deploy to cloud</code></pre>
 
-        <h3>Phase 5: Documentation &amp; Release</h3>
-<pre><code># Write a proper README
+                    <h3>Phase 5: Documentation &amp; Release</h3>
+                    <pre><code class="language-markdown"># Write a proper README
 ## Project Name
 One-line description.
 
@@ -644,58 +963,88 @@ my-project --input "hello"
 }
 ```</code></pre>
 
-        <h3>The complete flow</h3>
-<pre><code>Idea &rarr; One-pager &rarr; System Design &rarr; Repo Setup
+                    <h3>The complete flow</h3>
+                    <pre><code class="language-plaintext">Idea &rarr; One-pager &rarr; System Design &rarr; Repo Setup
   &rarr; Branch + Code + Tests &rarr; PR + Review &rarr; CI passes
   &rarr; Merge to main &rarr; Auto-deploy &rarr; Write paper
   &rarr; Project website &rarr; Push to arXiv &rarr; Share</code></pre>
 
-        <blockquote>
-          The gap between a student project and a professional one isn't talent &mdash; it's process. Follow these steps consistently and you'll build things that last.
-        </blockquote>
+                    <blockquote>
+                        The gap between a student project and a professional one
+                        isn't talent &mdash; it's process. Follow these steps
+                        consistently and you'll build things that last.
+                    </blockquote>
 
-        <p><strong>Resources</strong>:</p>
-        <ul>
-          <li><a href="https://docs.github.com/en/actions">GitHub Actions docs</a></li>
-          <li><a href="https://fastapi.tiangolo.com/tutorial/">FastAPI tutorial</a></li>
-          <li><a href="https://docs.docker.com/get-started/">Docker Getting Started</a></li>
-          <li><a href="https://www.youtube.com/watch?v=R8_veQiYBjI">TechWorld with Nana &mdash; CI/CD Explained</a></li>
-          <li><a href="https://www.youtube.com/watch?v=pTFZrZrHOc0">Fireship &mdash; Docker in 100 Seconds</a></li>
-          <li><a href="https://12factor.net/">The Twelve-Factor App</a></li>
-        </ul>
+                    <p><strong>Resources</strong>:</p>
+                    <ul>
+                        <li>
+                            <a href="https://docs.github.com/en/actions"
+                                >GitHub Actions docs</a
+                            >
+                        </li>
+                        <li>
+                            <a href="https://fastapi.tiangolo.com/tutorial/"
+                                >FastAPI tutorial</a
+                            >
+                        </li>
+                        <li>
+                            <a href="https://docs.docker.com/get-started/"
+                                >Docker Getting Started</a
+                            >
+                        </li>
+                        <li>
+                            <a
+                                href="https://www.youtube.com/watch?v=R8_veQiYBjI"
+                                >TechWorld with Nana &mdash; CI/CD Explained</a
+                            >
+                        </li>
+                        <li>
+                            <a
+                                href="https://www.youtube.com/watch?v=pTFZrZrHOc0"
+                                >Fireship &mdash; Docker in 100 Seconds</a
+                            >
+                        </li>
+                        <li>
+                            <a href="https://12factor.net/"
+                                >The Twelve-Factor App</a
+                            >
+                        </li>
+                    </ul>
 
-        <hr>
+                    <hr />
 
-        <h2>TL;DR &mdash; Your Learning Path</h2>
-        <ol>
-          <li>Set up VS Code + extensions</li>
-          <li>Learn virtual environments (pick one, master it)</li>
-          <li>Get comfortable with Git + GitHub + PRs</li>
-          <li>Write your first LaTeX doc on Overleaf</li>
-          <li>Deploy a project page on GitHub Pages</li>
-          <li>Install AI tools (Copilot, Claude Code)</li>
-          <li>Study one system design problem per week</li>
-          <li>Build one end-to-end project each semester</li>
-        </ol>
-        <p>
-          Start from step 1 and work your way down. Each skill compounds on the previous one. Good luck.
-        </p>
+                    <h2>TL;DR &mdash; Your Learning Path</h2>
+                    <ol>
+                        <li>Set up VS Code + extensions</li>
+                        <li>
+                            Learn virtual environments (pick one, master it)
+                        </li>
+                        <li>Get comfortable with Git + GitHub + PRs</li>
+                        <li>Write your first LaTeX doc on Overleaf</li>
+                        <li>Deploy a project page on GitHub Pages</li>
+                        <li>Install AI tools (Copilot, Claude Code)</li>
+                        <li>Study one system design problem per week</li>
+                        <li>Build one end-to-end project each semester</li>
+                    </ol>
+                    <p>
+                        Start from step 1 and work your way down. Each skill
+                        compounds on the previous one. Good luck.
+                    </p>
+                </article>
+            </div>
+        </main>
 
-      </article>
+        <footer class="footer">
+            <div class="footer-inner">
+                <span class="footer-copy">&copy; 2026 FTU Labs</span>
+                <div class="footer-links">
+                    <a href="https://github.com/ftulabs">GitHub</a>
+                    <a href="https://twitter.com/ftulabs">Twitter</a>
+                </div>
+            </div>
+        </footer>
 
-    </div>
-  </main>
-
-  <footer class="footer">
-    <div class="footer-inner">
-      <span class="footer-copy">&copy; 2026 FTU Labs</span>
-      <div class="footer-links">
-        <a href="https://github.com/ftulabs">GitHub</a>
-        <a href="https://twitter.com/ftulabs">Twitter</a>
-      </div>
-    </div>
-  </footer>
-
-  <script src="../js/main.js"></script>
-</body>
+        <script src="../js/main.js"></script>
+        <script src="../js/hljs.js"></script>
+    </body>
 </html>
