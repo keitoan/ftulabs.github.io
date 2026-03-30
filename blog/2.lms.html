@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/atom-one-dark.min.css">
   <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
@@ -60,7 +61,7 @@
           Moodle runs on a DigitalOcean VPS. When a student submits code, CodeRunner sends the job to <code>jobe.ftds.online</code>, which tunnels into our on-premise Docker Swarm via <strong>frp</strong>. HAProxy load-balances across Jobe instances &mdash; one per swarm node.
         </p>
 
-<pre><code>Students &rarr; ftds.online (DigitalOcean VPS)
+<pre><code class="language-plaintext">Students &rarr; ftds.online (DigitalOcean VPS)
               ├── ftds.online       &rarr; Moodle / Apache
               └── jobe.ftds.online  &rarr; frp tunnel
                                         &darr;
@@ -80,7 +81,7 @@
           All nodes must be on the same subnet. We set up routers in AP mode so every device shares the same IP range, then bootstrapped each node with a script:
         </p>
 
-<pre><code># On the leader &mdash; initialize Docker Swarm
+<pre><code class="language-bash"># On the leader &mdash; initialize Docker Swarm
 docker swarm init --advertise-addr 10.0.190.70:2377
 
 # On each worker &mdash; fill in .env with token and leader IP, then:
@@ -95,7 +96,7 @@ sudo ./swarm</code></pre>
           With the swarm ready, we deploy three services: Jobe instances (one per node), HAProxy for load balancing, and an frp tunnel to expose the cluster to the Moodle VPS.
         </p>
 
-<pre><code># Import configs
+<pre><code class="language-bash"># Import configs
 docker config create haproxy_cfg ./haproxy.cfg
 docker config create frpc_cfg ./frpc.cfg
 
@@ -117,7 +118,7 @@ docker stack ps coderunner</code></pre>
           Since the swarm runs on-premise behind NAT, we use <a href="https://github.com/fatedier/frp">frp</a> to create a reverse tunnel from the Moodle VPS to the swarm. The VPS runs <code>frps</code> listening on port 7000, and the swarm leader runs <code>frpc</code> as a Docker service:
         </p>
 
-<pre><code># frpc.toml (on swarm leader, runs as Docker service)
+<pre><code class="language-ini"># frpc.toml (on swarm leader, runs as Docker service)
 serverAddr = "ftds.online"
 serverPort = 7000
 auth.token = "..."
@@ -133,7 +134,7 @@ customDomains = ["jobe.ftds.online"]</code></pre>
           On the VPS side, Apache proxies <code>jobe.ftds.online</code> to the frp listener on port 8080:
         </p>
 
-<pre><code># /etc/apache2/sites-available/jobe.conf
+<pre><code class="language-bash"># /etc/apache2/sites-available/jobe.conf
 &lt;VirtualHost *:80&gt;
     ServerName jobe.ftds.online
     ProxyPreserveHost On
@@ -146,7 +147,7 @@ customDomains = ["jobe.ftds.online"]</code></pre>
           We built a custom Jobe image that includes <a href="https://github.com/tobymao/sqlglot">sqlglot</a> for SQL transpilation. Students can write SQL in MySQL or T-SQL syntax, and the sandbox transparently transpiles it to SQLite before execution. This lets us use the lightweight <strong>AdventureWorksLT</strong> database (converted from SQL Server <code>.bak</code> to SQLite) without running a full database server.
         </p>
 
-<pre><code># Build custom Jobe image with sqlglot
+<pre><code class="language-bash"># Build custom Jobe image with sqlglot
 docker build -t ${REGISTRY}/jobe-sqlglot:latest ./jobe
 docker push ${REGISTRY}/jobe-sqlglot:latest
 
@@ -162,13 +163,13 @@ docker stack deploy -c docker-compose.yml coderunner</code></pre>
           We wrote a shell script to clone courses for new semesters &mdash; copying activities, quizzes, question banks, and resources while stripping out student data:
         </p>
 
-<pre><code># Clone a course for a new semester
+<pre><code class="language-bash"># Clone a course for a new semester
 ./scripts/clone-course.sh 8 "TIN313(2627-1)GD1.01" \
   "TIN313(2627-1)GD1.01 - CO SO DU LIEU - Minh" "2026-09-01"</code></pre>
 
         <h2>Repo Structure</h2>
 
-<pre><code>ftulabs/coderunner          # Swarm bootstrap scripts
+<pre><code class="language-plaintext">ftulabs/coderunner          # Swarm bootstrap scripts
 ├── swarm                   # Node bootstrap (Docker + Swarm join)
 ├── swarm.ps1               # Windows variant
 ├── allow-ports             # Firewall rules
@@ -210,5 +211,6 @@ ftulabs/moodle-coderunner   # Moodle integration
   </footer>
 
   <script src="../js/main.js"></script>
+  <script src="../js/hljs.js"></script>
 </body>
 </html>

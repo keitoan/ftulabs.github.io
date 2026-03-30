@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/atom-one-dark.min.css">
   <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
@@ -63,7 +64,7 @@
           The design is straightforward: one leader node runs the orchestrator, load balancer, and monitoring stack. The remaining nodes are workers, each running a quantized LLM via <strong>llama.cpp</strong>. An Nvidia Jetson Xavier runs a larger 35B MoE model with CUDA for higher-quality responses.
         </p>
 
-<pre><code>┌──────────────────────────────────────────────────────────┐
+<pre><code class="language-plaintext">┌──────────────────────────────────────────────────────────┐
 │  Leader (10.0.190.65)                                    │
 │  ┌──────────┐ ┌───────────┐ ┌───────┐ ┌──────────┐     │
 │  │ Open     │ │  CrewAI   │ │Grafana│ │Prometheus│     │
@@ -101,7 +102,7 @@
           We automated the entire setup with Ansible. A single playbook handles Docker installation, GPU auto-detection, Swarm initialization, node labeling, model distribution (~2.6GB per node), image builds, and stack deployment.
         </p>
 
-<pre><code># Configure inventory
+<pre><code class="language-ini"># Configure inventory
 # ansible/inventory.ini
 [leader]
 10.0.190.65 ansible_user=minh
@@ -122,7 +123,7 @@ curl http://10.0.190.65:3001  # Web UI</code></pre>
           For quick local testing, you can spin up a single node with Docker Compose:
         </p>
 
-<pre><code>./scripts/download-model.sh
+<pre><code class="language-bash">./scripts/download-model.sh
 docker compose -f docker-compose.local.yml up -d
 ./scripts/test-agent.sh</code></pre>
 
@@ -134,7 +135,7 @@ docker compose -f docker-compose.local.yml up -d
           Under &gt;4 concurrent users, requests automatically spill into the worker pool. The API is fully OpenAI-compatible &mdash; any tool that speaks the OpenAI API works out of the box, no API key required on the LAN.
         </p>
 
-<pre><code># Chat via API (works with any OpenAI-compatible client)
+<pre><code class="language-bash"># Chat via API (works with any OpenAI-compatible client)
 curl http://10.0.190.65:8888/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{
@@ -148,7 +149,7 @@ curl http://10.0.190.65:8888/v1/chat/completions \
           The CrewAI master service on the leader node coordinates multi-agent workflows. You submit a goal, and the orchestrator distributes sub-tasks across available workers, tracks progress in Redis, and returns aggregated results.
         </p>
 
-<pre><code># Submit a goal
+<pre><code class="language-bash"># Submit a goal
 curl -X POST http://localhost:9091/goal \
   -H "Content-Type: application/json" \
   -d '{"goal": "Analyze the top 5 programming languages by popularity"}'
@@ -208,5 +209,6 @@ curl -X POST http://localhost:9091/calibrate</code></pre>
   </footer>
 
   <script src="../js/main.js"></script>
+  <script src="../js/hljs.js"></script>
 </body>
 </html>
