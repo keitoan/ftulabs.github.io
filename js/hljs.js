@@ -53,13 +53,24 @@
       badge.className = "lang-badge";
 
       var slug = SLUG_MAP[langName.toLowerCase()] || langName.toLowerCase();
-      var iconHtml = GENERIC_ICON;
 
       if (langName !== "text" && langName !== "plaintext") {
-        iconHtml = '<img src="https://cdn.simpleicons.org/' + slug + '/888888" alt="' + langName + '" onerror="this.onerror=null; this.outerHTML=\'' + GENERIC_ICON + '\';" />';
+        var img = document.createElement("img");
+        // Using explicit simpleicons request with fallback via JS onerror
+        img.src = "https://cdn.simpleicons.org/" + slug + "/888888";
+        img.alt = langName;
+        img.onerror = function() {
+          this.outerHTML = GENERIC_ICON;
+        };
+        badge.appendChild(img);
+      } else {
+        badge.innerHTML = GENERIC_ICON;
       }
 
-      badge.innerHTML = iconHtml + "<span>" + langName + "</span>";
+      var langSpan = document.createElement("span");
+      langSpan.textContent = langName;
+      badge.appendChild(langSpan);
+
       header.appendChild(badge);
 
       var btn = document.createElement("button");
