@@ -708,7 +708,8 @@ ol {
     font-weight: 500;
 }
 
-.lang-badge svg {
+.lang-badge svg,
+.lang-badge img {
     width: 16px;
     height: 16px;
     color: var(--text-secondary);
