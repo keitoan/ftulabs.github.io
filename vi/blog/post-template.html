@@ -1,14 +1,14 @@
 <!doctype html>
-<html lang="en">
+<html lang="vi">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>
-            Scaling Transformer Inference with Custom CUDA Kernels — FTU Labs
+            Tối ưu hóa tốc độ suy luận Transformer bằng CUDA Kernel tùy chỉnh — FTU Labs
         </title>
         <meta
             name="description"
-            content="How we achieved 3x inference speedup on A100 GPUs by writing custom fused attention kernels."
+            content="Cách tụi mình đạt được tốc độ suy luận nhanh gấp 3 lần trên GPU A100 bằng cách tự viết các kernel Attention tích hợp."
         />
         <link rel="icon" href="/img/logo.png" />
 
@@ -30,13 +30,13 @@
                 >
                 <div class="nav-actions">
                     <div class="nav-links">
-                        <a href="../projects.html">projects</a>
-                        <a href="../team.html">team</a>
-                        <a href="../research.html">research</a>
+                        <a href="../projects.html">dự án</a>
+                        <a href="../team.html">đội ngũ</a>
+                        <a href="../research.html">nghiên cứu</a>
                         <a href="../blog.html">blog</a>
                     </div>
-                    <div class="lang-switch" aria-label="Language"></div>
-                    <button class="theme-toggle" aria-label="Toggle theme">
+                    <div class="lang-switch" aria-label="Ngôn ngữ"></div>
+                    <button class="theme-toggle" aria-label="Đổi giao diện">
                         <svg class="icon-moon" viewBox="0 0 24 24">
                             <path
                                 d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
@@ -54,32 +54,31 @@
                             <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
                         </svg>
                     </button>
-                    <button class="nav-toggle" aria-label="Toggle menu">
+                    <button class="nav-toggle" aria-label="Mở menu">
                         <span></span><span></span><span></span>
                     </button>
                 </div>
             </div>
         </nav>
         <div class="nav-mobile">
-            <a href="../projects.html">projects</a>
-            <a href="../team.html">team</a>
-            <a href="../research.html">research</a>
+            <a href="../projects.html">dự án</a>
+            <a href="../team.html">đội ngũ</a>
+            <a href="../research.html">nghiên cứu</a>
             <a href="../blog.html">blog</a>
         </div>
 
         <main class="page">
             <div class="container">
                 <a href="../blog.html" class="post-back animate"
-                    >&larr; back to blog</a
+                    >&larr; quay lại blog</a
                 >
 
                 <header class="post-header animate animate-d1">
                     <h1 class="post-title">
-                        Scaling Transformer Inference with Custom CUDA Kernels
+                        Tối ưu hóa tốc độ suy luận Transformer bằng CUDA Kernel tùy chỉnh
                     </h1>
                     <div class="post-meta">
-                        2026-03-15 &middot; Minh Tran, Alex Rivera &middot; 12
-                        min read
+                        2026-03-15 &middot; Minh Tran, Alex Rivera &middot; 12 phút đọc
                     </div>
                 </header>
 
@@ -87,92 +86,49 @@
                     <figure>
                         <img
                             src="/img/1.ftu-ai-2.jpg"
-                            alt="Placeholder image"
+                            alt="Ảnh minh họa"
                         />
-                        <figcaption>Just a placeholder image</figcaption>
                     </figure>
 
                     <p>
-                        When we started optimizing inference for FTU-7B, our
-                        initial benchmarks showed that standard PyTorch
-                        attention was the primary bottleneck &mdash; accounting
-                        for roughly 60% of total inference time on A100 GPUs.
-                        This post describes how we wrote custom CUDA kernels to
-                        achieve a 3x speedup, and the lessons we learned along
-                        the way.
+                        Khi tụi mình bắt tay vào tối ưu hóa quá trình suy luận (inference) cho model FTU-7B, các bài đo hiệu năng đầu tiên cho thấy phần Attention mặc định của PyTorch chính là điểm nghẽn lớn nhất — nó chiếm khoảng 60% tổng thời gian suy luận trên GPU A100. Bài viết này sẽ mô tả cách tụi mình tự viết các CUDA kernel tùy chỉnh để tăng tốc độ lên gấp 3 lần, cùng với đó là những bài học xương máu rút ra được trong quá trình thực hiện.
                     </p>
 
-                    <h2>The Problem: Memory-Bound Attention</h2>
+                    <h2>Vấn đề: Attention bị giới hạn bởi bộ nhớ (Memory-Bound)</h2>
                     <p>
-                        Transformer attention is fundamentally a memory-bound
-                        operation. The standard implementation materializes the
-                        full N&times;N attention matrix, requiring O(N&sup2;)
-                        memory and bandwidth. For long sequences (4K+ tokens),
-                        this becomes the dominant cost &mdash; not because of
-                        compute, but because of how data moves between GPU
-                        memory hierarchies.
+                        Cơ chế Attention trong kiến trúc Transformer về bản chất là một tác vụ bị giới hạn bởi bộ nhớ (memory-bound). Cách triển khai thông thường sẽ phải tạo ra toàn bộ ma trận Attention kích thước N×N, yêu cầu bộ nhớ và băng thông ở mức O(N²). Với các chuỗi dài (trên 4000 token), đây trở thành chi phí chiếm tỷ trọng lớn nhất — không phải do năng lực tính toán mà do cách dữ liệu di chuyển giữa các phân cấp bộ nhớ (Memory Hierarchy) của GPU.
                     </p>
                     <p>
-                        Our profiling revealed that the standard attention path
-                        spent most of its time waiting for memory transfers
-                        rather than doing useful computation. The arithmetic
-                        intensity was well below what the A100 can sustain:
+                        Quá trình thu thập dữ liệu (Profiling) cho thấy Attention mặc định dành phần lớn thời gian để chờ đợi dữ liệu được truyền đi thay vì thực hiện các phép tính có ích. Mật độ tính toán thực tế thấp hơn rất nhiều so với những gì card A100 có thể đáp ứng:
                     </p>
 
-                    <pre><code class="language-plaintext"># Profiling results (A100 80GB, batch=1, seq_len=4096)
-Standard Attention:     142ms  (memory bandwidth: 1.2 TB/s)
-cuBLAS GEMM (Q&times;K):      38ms
+                    <pre><code class="language-plaintext"># Kết quả đo hiệu năng (A100 80GB, batch=1, seq_len=4096)
+Standard Attention:     142ms  (băng thông bộ nhớ: 1.2 TB/s)
+cuBLAS GEMM (Q×K):      38ms
 Softmax:                 24ms
-cuBLAS GEMM (A&times;V):      36ms
-Memory allocation:       44ms  &larr; the hidden cost</code></pre>
+cuBLAS GEMM (A×V):      36ms
+Cấp phát bộ nhớ:         44ms  ← chi phí ẩn</code></pre>
 
                     <p>
-                        That 44ms spent on memory allocation alone was a red
-                        flag. Every forward pass was allocating and deallocating
-                        temporary buffers for the attention matrix &mdash; a
-                        pattern that's optimized away in Flash Attention but
-                        present in many standard implementations.
+                        Con số 44ms chỉ dành riêng cho việc cấp phát bộ nhớ là một dấu hiệu cảnh báo đỏ. Mỗi lần chạy qua (forward pass) đều phải cấp phát và giải phóng các vùng nhớ tạm cho ma trận Attention — đây là một mô hình đã được tối ưu hóa trong Flash Attention nhưng vẫn tồn tại trong nhiều cách triển khai thông thường.
                     </p>
 
-                    <h2>Our Approach: Fused Tiled Attention</h2>
+                    <h2>Giải pháp: Kiến trúc Fused Tiled Attention</h2>
                     <p>
-                        Rather than computing attention in separate GEMM &rarr;
-                        softmax &rarr; GEMM stages, we fuse everything into a
-                        single kernel that operates on tiles of the input. This
-                        is conceptually similar to
-                        <a href="#">Flash Attention</a>, but with several
-                        modifications specific to our model architecture:
+                        Thay vì tính toán Attention qua từng giai đoạn riêng biệt (như nhân ma trận GEMM -> tính Softmax -> nhân ma trận GEMM), tụi mình gộp tất cả vào một kernel duy nhất xử lý theo từng khối (tile) dữ liệu đầu vào. Cách làm này tương tự như <a href="#">Flash Attention</a>, nhưng có một vài chỉnh sửa riêng biệt cho kiến trúc mô hình của tụi mình:
                     </p>
                     <ul>
-                        <li>
-                            <strong>Grouped-query attention (GQA)</strong>
-                            &mdash; FTU-7B uses 8 KV heads shared across 32
-                            query heads, requiring careful shared memory
-                            management
-                        </li>
-                        <li>
-                            <strong>RoPE integration</strong> &mdash; We compute
-                            rotary position embeddings inside the kernel rather
-                            than as a separate pre-processing step
-                        </li>
-                        <li>
-                            <strong
-                                >Online softmax with FP32 accumulators</strong
-                            >
-                            &mdash; Maintaining numerical stability while
-                            keeping the data path in FP16/BF16
-                        </li>
+                      <li><strong>Attention theo nhóm truy vấn (Grouped-query attention - GQA)</strong>: Model FTU-7B dùng 8 đầu KV (KV heads) chia sẻ cho 32 đầu truy vấn (query heads), yêu cầu việc quản lý bộ nhớ chia sẻ (shared memory) phải cực kỳ cẩn thận.</li>
+                      <li><strong>Tích hợp mã hóa vị trí xoay (Rotary Position Embedding - RoPE)</strong>: Tụi mình tính toán vị trí ngay trong kernel thay vì để nó là một bước tiền xử lý riêng biệt.</li>
+                      <li><strong>Tính Softmax trực tiếp (Online Softmax) với bộ cộng dồn FP32</strong>: Duy trì sự ổn định về mặt số học trong khi vẫn giữ luồng dữ liệu ở định dạng FP16 hoặc BF16.</li>
                     </ul>
 
-                    <h2>Implementation Details</h2>
+                    <h2>Chi tiết triển khai</h2>
                     <p>
-                        The core idea is to tile the computation so that each
-                        thread block processes a block of queries against all
-                        key-value pairs, accumulating the output in shared
-                        memory:
+                        Ý tưởng cốt lõi là chia nhỏ phép tính theo khối sao cho mỗi khối luồng (thread block) xử lý một nhóm vị trí truy vấn đối với toàn bộ các cặp Key-Value, sau đó cộng dồn kết quả đầu ra vào bộ nhớ chia sẻ:
                     </p>
 
-                    <pre><code class="language-cpp">// Simplified kernel structure (actual implementation is ~800 lines)
+                    <pre><code class="language-cpp">// Cấu trúc kernel rút gọn (bản thực tế dài khoảng 800 dòng)
 __global__ void fused_attention_kernel(
     const half* __restrict__ Q,
     const half* __restrict__ K,
@@ -181,100 +137,80 @@ __global__ void fused_attention_kernel(
     const int seq_len,
     const int head_dim
 ) {
-    // Each block handles BLOCK_M query positions
+    // Mỗi khối xử lý BLOCK_M vị trí truy vấn
     const int q_start = blockIdx.x * BLOCK_M;
 
-    // Shared memory for Q, K, V tiles
+    // Bộ nhớ chia sẻ cho các khối Q, K, V
     __shared__ half smem_q[BLOCK_M][HEAD_DIM];
     __shared__ half smem_k[BLOCK_N][HEAD_DIM];
     __shared__ half smem_v[BLOCK_N][HEAD_DIM];
 
-    // Online softmax state
+    // Trạng thái cho Online Softmax
     float row_max = -INFINITY;
     float row_sum = 0.0f;
     float acc[BLOCK_M][HEAD_DIM] = {0};
 
-    // Iterate over K,V blocks
-    for (int kv_start = 0; kv_start &lt; seq_len; kv_start += BLOCK_N) {
+    // Lặp qua các khối Key và Value
+    for (int kv_start = 0; kv_start < seq_len; kv_start += BLOCK_N) {
         load_tile(K, smem_k, kv_start);
         load_tile(V, smem_v, kv_start);
         __syncthreads();
 
-        // Compute QK^T, apply RoPE, scale, mask
-        // Online softmax update
-        // Accumulate O = softmax(QK^T) * V
+        // Tính QK^T, áp dụng RoPE, tỷ lệ hóa, tạo mask
+        // Cập nhật Online Softmax
+        // Cộng dồn O = softmax(QK^T) * V
     }
 
     store_output(O, acc, row_sum, q_start);
 }</code></pre>
 
                     <p>
-                        We compile the kernel ahead of time to avoid JIT
-                        overhead in production:
+                        Tụi mình biên dịch sẵn kernel để tránh việc hệ thống phải biên dịch lại (JIT) khi đưa vào vận hành thực tế:
                     </p>
 
-                    <pre><code class="language-bash"># Compile for A100 (SM 8.0) and H100 (SM 9.0)
+                    <pre><code class="language-bash"># Biên dịch cho A100 (SM 8.0) và H100 (SM 9.0)
 nvcc -O3 -arch=sm_80 -gencode=arch=compute_90,code=sm_90 \
      --use_fast_math -lineinfo \
      -o fused_attn.so --shared fused_attention.cu
 
-# Run the benchmark suite
+# Chạy quy trình đo hiệu năng
 python bench.py --kernel fused --seq-lengths 2048 4096 8192 16384</code></pre>
 
-                    <h2>Results</h2>
+                    <h2>Kết quả</h2>
                     <p>
-                        After several iterations of tuning tile sizes, shared
-                        memory layout, and warp scheduling, we achieved
-                        significant improvements across all sequence lengths:
+                        Sau nhiều lần tinh chỉnh kích thước khối dữ liệu, cách sắp xếp bộ nhớ chia sẻ và lập lịch hoạt động, tụi mình đã đạt được những cải thiện đáng kể trên mọi độ dài chuỗi:
                     </p>
 
                     <blockquote>
-                        The key insight was not algorithmic &mdash; it was about
-                        understanding the GPU memory hierarchy deeply enough to
-                        keep the SMs fed with data at every cycle.
+                        Bài học quan trọng nhất không nằm ở thuật toán — mà là ở việc hiểu sâu về kiến trúc bộ nhớ của GPU để làm sao các đơn vị tính toán (SM) luôn được "nuôi" đầy đủ dữ liệu trong mọi chu kỳ.
                     </blockquote>
 
                     <p>
-                        On our standard benchmark (A100 80GB, BF16, batch size
-                        1):
+                        Trên hệ thống đo chuẩn (A100 80GB, định dạng BF16, kích thước mẫu bằng 1):
                     </p>
                     <ul>
-                        <li>
-                            Seq 2048: <strong>2.1x speedup</strong> (68ms &rarr;
-                            32ms)
-                        </li>
-                        <li>
-                            Seq 4096: <strong>2.8x speedup</strong> (142ms
-                            &rarr; 51ms)
-                        </li>
-                        <li>
-                            Seq 8192: <strong>3.2x speedup</strong> (412ms
-                            &rarr; 129ms)
-                        </li>
-                        <li>
-                            Seq 16384: <strong>3.4x speedup</strong> (1.6s
-                            &rarr; 470ms)
-                        </li>
+                      <li>Chuỗi 2048: <strong>Nhanh gấp 2.1 lần</strong> (68ms còn 32ms)</li>
+                      <li>Chuỗi 4096: <strong>Nhanh gấp 2.8 lần</strong> (142ms còn 51ms)</li>
+                      <li>Chuỗi 8192: <strong>Nhanh gấp 3.2 lần</strong> (412ms còn 129ms)</li>
+                      <li>Chuỗi 16384: <strong>Nhanh gấp 3.4 lần</strong> (1.6 giây còn 470ms)</li>
                     </ul>
 
-                    <h2>Packaging for Deployment</h2>
+                    <h2>Đóng gói triển khai</h2>
                     <p>
-                        To keep the inference environment reproducible across
-                        machines, we containerize everything with a multi-stage
-                        Docker build:
+                        Để môi trường suy luận có thể chạy ổn định trên các máy khác nhau, tụi mình đóng gói mọi thứ bằng Docker với quy trình build nhiều giai đoạn (multi-stage build):
                     </p>
 
-                    <pre><code class="language-dockerfile"># Stage 1: compile the CUDA kernel
+                    <pre><code class="language-dockerfile"># Giai đoạn 1: Biên dịch CUDA kernel
 FROM nvidia/cuda:12.4.1-devel-ubuntu22.04 AS builder
 WORKDIR /build
 COPY kernels/ ./kernels/
 RUN nvcc -O3 -arch=sm_80 --use_fast_math \
         -o fused_attn.so --shared kernels/fused_attention.cu
 
-# Stage 2: slim runtime image
+# Giai đoạn 2: Image runtime gọn nhẹ
 FROM nvidia/cuda:12.4.1-runtime-ubuntu22.04
-RUN apt-get update &amp;&amp; apt-get install -y --no-install-recommends \
-        python3 python3-pip &amp;&amp; \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        python3 python3-pip && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -286,41 +222,22 @@ COPY src/ ./src/
 EXPOSE 8000
 CMD ["python3", "-m", "uvicorn", "src.api:app", "--host", "0.0.0.0", "--port", "8000"]</code></pre>
 
-                    <pre><code class="language-bash"># Build and run
+                    <pre><code class="language-bash"># Build và chạy
 docker build -t ftu-inference .
 docker run --gpus all -p 8000:8000 ftu-inference</code></pre>
 
-                    <h2>Lessons Learned</h2>
+                    <h2>Bài học kinh nghiệm</h2>
                     <p>
-                        Writing CUDA kernels is as much art as science. Here are
-                        the non-obvious lessons from this project:
+                        Viết CUDA kernel vừa là một môn khoa học, vừa là một môn nghệ thuật. Đây là những bài học "ngầm" mà tụi mình rút ra được:
                     </p>
                     <ol>
-                        <li>
-                            <strong>Profile before you optimize.</strong> Our
-                            initial assumption was that the GEMM operations were
-                            the bottleneck. They weren't &mdash; memory
-                            allocation and data layout were.
-                        </li>
-                        <li>
-                            <strong
-                                >Shared memory bank conflicts are real.</strong
-                            >
-                            A 2-line change to our memory layout (adding padding
-                            to avoid bank conflicts) gave us a 15% speedup.
-                        </li>
-                        <li>
-                            <strong>Test numerics obsessively.</strong> FP16
-                            accumulation introduced subtle errors that only
-                            manifested at long sequence lengths. FP32
-                            accumulators are non-negotiable.
-                        </li>
+                      <li><strong>Hãy đo hiệu năng trước khi tối ưu hóa</strong>: Ban đầu tụi mình cứ tưởng các phép nhân ma trận (GEMM) là điểm nghẽn. Sự thật không phải vậy — vấn đề nằm ở việc cấp phát bộ nhớ và cách sắp xếp dữ liệu.</li>
+                      <li><strong>Xung đột trong bộ nhớ chia sẻ (Bank Conflict) là có thật</strong>: Một thay đổi nhỏ chỉ 2 dòng code để căn chỉnh bộ nhớ (thêm phần đệm để tránh xung đột) đã giúp tăng tốc thêm 15%.</li>
+                      <li><strong>Kiểm tra sự ổn định về mặt số học một cách gắt gao</strong>: Việc cộng dồn với độ chính xác FP16 đã tạo ra những sai số nhỏ, chỉ xuất hiện với các chuỗi rất dài. Vì vậy, việc dùng bộ cộng dồn FP32 là điều bắt buộc.</li>
                     </ol>
 
                     <p>
-                        The full kernel implementation is available in our
-                        <a href="#">FlashKernel repository</a>. We welcome
-                        contributions and benchmarks on other GPU architectures.
+                        Toàn bộ mã nguồn triển khai kernel này hiện có sẵn tại <a href="#">FlashKernel repository</a>. Tụi mình rất mong nhận được đóng góp và các bài test hiệu năng trên các dòng GPU khác từ cộng đồng.
                     </p>
                 </article>
             </div>

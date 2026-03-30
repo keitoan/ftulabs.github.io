@@ -1,12 +1,12 @@
 <!doctype html>
-<html lang="en">
+<html lang="vi">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Running Moodle CodeRunner on a Docker Swarm — FTU Labs</title>
+        <title>Chạy Moodle CodeRunner trên cụm Docker Swarm — FTU Labs</title>
         <meta
             name="description"
-            content="How we deployed Moodle with CodeRunner and a distributed Jobe sandbox across a Docker Swarm cluster for live code grading."
+            content="Hành trình triển khai Moodle tích hợp CodeRunner và các sandbox Jobe phân tán trên Docker Swarm để chấm code tự động."
         />
         <link rel="icon" href="/img/logo.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -26,13 +26,13 @@
                 >
                 <div class="nav-actions">
                     <div class="nav-links">
-                        <a href="../projects.html">projects</a>
-                        <a href="../team.html">team</a>
-                        <a href="../research.html">research</a>
+                        <a href="../projects.html">dự án</a>
+                        <a href="../team.html">đội ngũ</a>
+                        <a href="../research.html">nghiên cứu</a>
                         <a href="../blog.html">blog</a>
                     </div>
-                    <div class="lang-switch" aria-label="Language"></div>
-                    <button class="theme-toggle" aria-label="Toggle theme">
+                    <div class="lang-switch" aria-label="Ngôn ngữ"></div>
+                    <button class="theme-toggle" aria-label="Đổi giao diện">
                         <svg class="icon-moon" viewBox="0 0 24 24">
                             <path
                                 d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
@@ -50,142 +50,103 @@
                             <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
                         </svg>
                     </button>
-                    <button class="nav-toggle" aria-label="Toggle menu">
+                    <button class="nav-toggle" aria-label="Mở menu">
                         <span></span><span></span><span></span>
                     </button>
                 </div>
             </div>
         </nav>
         <div class="nav-mobile">
-            <a href="../projects.html">projects</a>
-            <a href="../team.html">team</a>
-            <a href="../research.html">research</a>
+            <a href="../projects.html">dự án</a>
+            <a href="../team.html">đội ngũ</a>
+            <a href="../research.html">nghiên cứu</a>
             <a href="../blog.html">blog</a>
         </div>
 
         <main class="page">
             <div class="container">
                 <a href="../blog.html" class="post-back animate"
-                    >&larr; back to blog</a
+                    >&larr; quay lại blog</a
                 >
 
                 <header class="post-header animate animate-d1">
                     <h1 class="post-title">
-                        Running Moodle CodeRunner on a Docker Swarm
+                        Chạy Moodle CodeRunner trên cụm Docker Swarm
                     </h1>
                     <div class="post-meta">
-                        2026-01-25 &middot; FTU Labs &middot; 7 min read
+                        2026-01-25 &middot; FTU Labs &middot; 7 phút đọc
                     </div>
                 </header>
 
                 <article class="post-content animate animate-d2">
                     <p>
-                        We needed a way for students to write and submit code
-                        directly inside Moodle quizzes &mdash; with instant,
-                        automated grading. The answer was
-                        <strong>CodeRunner</strong> with a distributed
-                        <strong>Jobe</strong> sandbox running across our Docker
-                        Swarm. The LMS is live at
+                        Tụi mình cần một cách để sinh viên có thể viết và nộp code trực tiếp ngay trong các bài kiểm tra trên Moodle, kèm theo đó là kết quả chấm điểm tự động tức thì. Giải pháp của tụi mình là sử dụng <strong>CodeRunner</strong> kết hợp với hệ thống sandbox <strong>Jobe</strong> phân tán chạy trên cụm Docker Swarm. Trang web học tập (LMS) của tụi mình hiện đang chạy tại:
                         <a href="https://ftds.online">ftds.online</a>.
                     </p>
 
-                    <h2>Architecture</h2>
+                    <h2>Kiến trúc hệ thống</h2>
                     <p>
-                        Moodle runs on a DigitalOcean VPS. When a student
-                        submits code, CodeRunner sends the job to
-                        <code>jobe.ftds.online</code>, which tunnels into our
-                        on-premise Docker Swarm via <strong>frp</strong>.
-                        HAProxy load-balances across Jobe instances &mdash; one
-                        per swarm node.
+                        Moodle được cài đặt trên một máy chủ ảo (VPS) của DigitalOcean. Khi sinh viên nộp code, CodeRunner sẽ gửi yêu cầu chấm bài tới địa chỉ <code>jobe.ftds.online</code>. Địa chỉ này thực chất là một đường truyền ngược (Reverse Tunnel) qua <strong>frp</strong> dẫn thẳng vào cụm Docker Swarm đặt tại phòng lab của tụi mình. HAProxy sẽ chịu trách nhiệm cân bằng tải giữa các bản sao Jobe — mỗi máy trong cụm Swarm sẽ chạy một bản sao Jobe.
                     </p>
 
-                    <pre><code class="language-plaintext">Students &rarr; ftds.online (DigitalOcean VPS)
-              ├── ftds.online       &rarr; Moodle / Apache
-              └── jobe.ftds.online  &rarr; frp tunnel
-                                        &darr;
-                                    HAProxy LB
-                                        &darr;
-                              Jobe instances (1 per swarm node)</code></pre>
+                    <pre><code class="language-plaintext">Sinh viên -> ftds.online (DigitalOcean VPS)
+               ├── ftds.online       -> Moodle / Apache
+               └── jobe.ftds.online  -> quy trình frp tunnel
+                                         ↓
+                                     HAProxy LB
+                                         ↓
+                               Các bản sao Jobe (1 bản mỗi máy)</code></pre>
 
                     <ul>
-                        <li>
-                            <strong>Moodle + Apache</strong> &mdash; hosted on a
-                            VPS, serves the LMS frontend
-                        </li>
-                        <li>
-                            <strong>Jobe (jobeinabox)</strong> &mdash; code
-                            execution sandbox, runs globally across all swarm
-                            nodes
-                        </li>
-                        <li>
-                            <strong>HAProxy</strong> &mdash; load balancer with
-                            health checks (<code>inter 10s</code>,
-                            <code>fall 5</code>, <code>rise 2</code>)
-                        </li>
-                        <li>
-                            <strong>frp tunnel</strong> &mdash; Docker Swarm
-                            service exposing the LB to Moodle via
-                            <code>jobe.ftds.online</code>
-                        </li>
+                        <li><strong>Moodle + Apache</strong>: Chạy trên máy chủ ảo (VPS), đóng vai trò là giao diện chính của trang học tập.</li>
+                        <li><strong>Jobe (jobeinabox)</strong>: Môi trường sandbox để thực thi code, chạy đồng loạt trên tất cả các máy trong cụm Swarm.</li>
+                        <li><strong>HAProxy</strong>: Bộ cân bằng tải kèm theo các bước kiểm tra trạng thái (Health Check) (<code>inter 10s</code>, <code>fall 5</code>, <code>rise 2</code>).</li>
+                        <li><strong>frp tunnel</strong>: Một dịch vụ trong Docker Swarm giúp đưa bộ cân bằng tải ra ngoài internet thông qua <code>jobe.ftds.online</code>.</li>
                     </ul>
 
-                    <h2>Setting Up the Swarm</h2>
+                    <h2>Thiết lập cụm Swarm</h2>
                     <p>
-                        All nodes must be on the same subnet. We set up routers
-                        in AP mode so every device shares the same IP range,
-                        then bootstrapped each node with a script:
+                        Tất cả các máy phải nằm trong cùng một mạng nội bộ. Tụi mình thiết lập các router ở chế độ Access Point (AP) để mọi thiết bị có cùng dải IP, sau đó cài đặt từng máy bằng một tập lệnh tự động:
                     </p>
 
-                    <pre><code class="language-bash"># On the leader &mdash; initialize Docker Swarm
+                    <pre><code class="language-bash"># Trên máy chính (leader) — khởi tạo Docker Swarm
 docker swarm init --advertise-addr 10.0.190.70:2377
 
-# On each worker &mdash; fill in .env with token and leader IP, then:
+# Trên các máy con (worker) — điền token và IP máy chính vào file .env, sau đó chạy:
 sudo ./swarm</code></pre>
 
                     <p>
-                        The <code>swarm</code> script handles Docker
-                        installation (Ubuntu/Arch), user permissions, and
-                        joining the Swarm cluster automatically.
+                        Tập lệnh <code>swarm</code> sẽ tự động cài Docker (hỗ trợ Ubuntu/Arch), cấp quyền người dùng và thực hiện gia nhập vào cụm Swarm một cách tự động.
                     </p>
 
-                    <h2>Deploying the Stack</h2>
+                    <h2>Triển khai hạ tầng</h2>
                     <p>
-                        With the swarm ready, we deploy three services: Jobe
-                        instances (one per node), HAProxy for load balancing,
-                        and an frp tunnel to expose the cluster to the Moodle
-                        VPS.
+                        Khi cụm Swarm đã sẵn sàng, tụi mình triển khai 3 dịch vụ chính: các bản sao Jobe, HAProxy để cân bằng tải và đường truyền frp để kết nối cụm máy tính với Moodle VPS.
                     </p>
 
-                    <pre><code class="language-bash"># Import configs
+                    <pre><code class="language-bash"># Nạp các file cấu hình
 docker config create haproxy_cfg ./haproxy.cfg
 docker config create frpc_cfg ./frpc.cfg
 
-# Deploy CodeRunner stack
+# Triển khai bộ CodeRunner
 docker stack deploy -c stack.yml coderunner
 
-# Deploy Portainer for monitoring
+# Triển khai Portainer để theo dõi
 docker stack deploy -c portainer-agent-stack.yml portainer
 
-# Verify
+# Kiểm tra trạng thái
 docker stack ps coderunner</code></pre>
 
                     <p>
-                        Portainer gives us a web UI at port 9000 to monitor node
-                        health, container status, and cluster visualization
-                        across all swarm nodes.
+                        Portainer cung cấp một giao diện web tại cổng 9000 giúp tụi mình theo dõi sức khỏe của các máy, trạng thái các container và biểu đồ trực quan của toàn bộ cụm Swarm.
                     </p>
 
-                    <h2>The frp Tunnel</h2>
+                    <h2>Đường truyền frp (frp Tunnel)</h2>
                     <p>
-                        Since the swarm runs on-premise behind NAT, we use
-                        <a href="https://github.com/fatedier/frp">frp</a> to
-                        create a reverse tunnel from the Moodle VPS to the
-                        swarm. The VPS runs <code>frps</code> listening on port
-                        7000, and the swarm leader runs <code>frpc</code> as a
-                        Docker service:
+                        Vì cụm máy tính nằm trong mạng nội bộ (phía sau NAT), tụi mình dùng <a href="https://github.com/fatedier/frp">frp</a> để tạo một đường truyền ngược từ VPS về phòng lab. VPS sẽ chạy <code>frps</code> tại cổng 7000, còn máy chính ở lab chạy <code>frpc</code> dưới dạng một dịch vụ Docker:
                     </p>
 
-                    <pre><code class="language-ini"># frpc.toml (on swarm leader, runs as Docker service)
+                    <pre><code class="language-ini"># frpc.toml (chạy trên máy leader ở lab)
 serverAddr = "ftds.online"
 serverPort = 7000
 auth.token = "..."
@@ -193,14 +154,12 @@ auth.token = "..."
 [[proxies]]
 name = "jobe_tunnel"
 type = "http"
-localIP = "lb"           # resolves on Docker overlay network
+localIP = "lb"           # trỏ tới mạng nội bộ của Docker
 localPort = 80
 customDomains = ["jobe.ftds.online"]</code></pre>
 
                     <p>
-                        On the VPS side, Apache proxies
-                        <code>jobe.ftds.online</code> to the frp listener on
-                        port 8080:
+                        Phía trên VPS, Apache sẽ nhận các yêu cầu tới <code>jobe.ftds.online</code> và đẩy ngược về cổng 8080 của frp:
                     </p>
 
                     <pre><code class="language-bash"># /etc/apache2/sites-available/jobe.conf
@@ -211,88 +170,57 @@ customDomains = ["jobe.ftds.online"]</code></pre>
     ProxyPassReverse / http://127.0.0.1:8080/
 &lt;/VirtualHost&gt;</code></pre>
 
-                    <h2>SQL Support with sqlglot</h2>
+                    <h2>Hỗ trợ SQL với sqlglot</h2>
                     <p>
-                        We built a custom Jobe image that includes
-                        <a href="https://github.com/tobymao/sqlglot">sqlglot</a>
-                        for SQL transpilation. Students can write SQL in MySQL
-                        or T-SQL syntax, and the sandbox transparently
-                        transpiles it to SQLite before execution. This lets us
-                        use the lightweight
-                        <strong>AdventureWorksLT</strong> database (converted
-                        from SQL Server <code>.bak</code> to SQLite) without
-                        running a full database server.
+                        Tụi mình đã build một image Jobe riêng tích hợp sẵn thư viện <a href="https://github.com/tobymao/sqlglot">sqlglot</a> để chuyển đổi cú pháp SQL (SQL transpilation). Sinh viên có thể viết code SQL theo cú pháp của MySQL hoặc T-SQL, và sandbox sẽ tự động chuyển đổi nó sang SQLite trước khi thực thi. Điều này giúp tụi mình sử dụng được bộ dữ liệu mẫu <strong>AdventureWorksLT</strong> (được chuyển từ file <code>.bak</code> của SQL Server sang SQLite) mà không cần phải cài đặt một máy chủ database cồng kềnh.
                     </p>
 
-                    <pre><code class="language-bash"># Build custom Jobe image with sqlglot
+                    <pre><code class="language-bash"># Build image Jobe tùy chỉnh kèm sqlglot
 docker build -t ${REGISTRY}/jobe-sqlglot:latest ./jobe
 docker push ${REGISTRY}/jobe-sqlglot:latest
 
-# Deploy
+# Triển khai lại
 docker stack deploy -c docker-compose.yml coderunner</code></pre>
 
                     <p>
-                        The CodeRunner template uses
-                        <code
-                            >sqlglot.transpile(sql, read="tsql",
-                            write="sqlite")</code
-                        >
-                        to handle T-SQL syntax like <code>TOP 5</code>,
-                        <code>ISNULL()</code>, and square bracket identifiers.
+                        Mẫu bài tập trên CodeRunner sử dụng lệnh <code>sqlglot.transpile(sql, read="tsql", write="sqlite")</code> để xử lý các cú pháp T-SQL như <code>TOP 5</code>, <code>ISNULL()</code> và các định danh trong dấu ngoặc vuông.
                     </p>
 
-                    <h2>Course Management</h2>
+                    <h2>Quản lý khóa học</h2>
                     <p>
-                        We wrote a shell script to clone courses for new
-                        semesters &mdash; copying activities, quizzes, question
-                        banks, and resources while stripping out student data:
+                        Tụi mình có viết sẵn một tập lệnh shell để nhân bản (clone) khóa học cho mỗi kỳ học mới — giúp sao chép toàn bộ các hoạt động, bài kiểm tra, ngân hàng câu hỏi và tài liệu trong khi vẫn giữ sạch dữ liệu sinh viên cũ:
                     </p>
 
-                    <pre><code class="language-bash"># Clone a course for a new semester
+                    <pre><code class="language-bash"># Nhân bản khóa học cho kỳ học mới
 ./scripts/clone-course.sh 8 "TIN313(2627-1)GD1.01" \
   "TIN313(2627-1)GD1.01 - CO SO DU LIEU - Minh" "2026-09-01"</code></pre>
 
-                    <h2>Repo Structure</h2>
+                    <h2>Cấu trúc thư mục mã nguồn</h2>
 
-                    <pre><code class="language-plaintext">ftulabs/coderunner          # Swarm bootstrap scripts
-├── swarm                   # Node bootstrap (Docker + Swarm join)
-├── swarm.ps1               # Windows variant
-├── allow-ports             # Firewall rules
+                    <pre><code class="language-plaintext">ftulabs/coderunner          # Các script thiết lập Swarm
+├── swarm                   # Cài đặt node (Docker + Swarm join)
+├── swarm.ps1               # Bản dành cho Windows
+├── allow-ports             # Cấu hình tường lửa
 ├── stack.yml               # Docker stack (Jobe + HAProxy + frpc)
-└── haproxy.cfg             # Load balancer config
+└── haproxy.cfg             # Cấu hình bộ cân bằng tải
 
-ftulabs/moodle-coderunner   # Moodle integration
-├── docker-compose.yml      # Swarm stack (Jobe + HAProxy + tunnel)
+ftulabs/moodle-coderunner   # Tích hợp Moodle
+├── docker-compose.yml      # Swarm stack
 ├── jobe/
-│   ├── Dockerfile          # Custom Jobe image (base + sqlglot)
-│   └── haproxy.cfg         # HAProxy config
+│   ├── Dockerfile          # Image Jobe tùy biến (base + sqlglot)
+│   └── haproxy.cfg         # Cấu hình HAProxy
 ├── scripts/
-│   ├── clone-course.sh     # Course cloning
-│   └── clone-course.php    # Moodle backup/restore
+│   ├── clone-course.sh     # Script nhân bản khóa học
+│   └── clone-course.php    # Sao lưu/khôi phục trên Moodle
 └── adventureworks/
     ├── AdventureWorksLT2019.db
-    └── sql_quizzes.xml     # Quiz questions (Moodle XML)</code></pre>
+    └── sql_quizzes.xml     # Ngân hàng câu hỏi (Moodle XML)</code></pre>
 
-                    <h2>Links</h2>
+                    <h2>Liên kết hữu ích</h2>
                     <ul>
-                        <li>
-                            <a href="https://ftds.online">ftds.online</a>
-                            &mdash; live LMS
-                        </li>
-                        <li>
-                            <a href="https://github.com/ftulabs/coderunner"
-                                >ftulabs/coderunner</a
-                            >
-                            &mdash; Swarm bootstrap scripts
-                        </li>
-                        <li>
-                            <a
-                                href="https://github.com/ftulabs/moodle-coderunner"
-                                >ftulabs/moodle-coderunner</a
-                            >
-                            &mdash; Moodle CodeRunner deployment and course
-                            tools
-                        </li>
+                        <li><a href="https://ftds.online">ftds.online</a> — Trang LMS đang hoạt động</li>
+                        <li><a href="https://github.com/ftulabs/coderunner">ftulabs/coderunner</a> — Các script thiết lập Swarm tự động</li>
+                        <li><a href="https://github.com/ftulabs/moodle-coderunner">ftulabs/moodle-coderunner</a> — Công cụ triển khai và quản lý khóa học CodeRunner</li>
                     </ul>
                 </article>
             </div>

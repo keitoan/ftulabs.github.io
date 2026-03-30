@@ -1,14 +1,14 @@
 <!doctype html>
-<html lang="en">
+<html lang="vi">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>
-            Building a 40-Node LLM Cluster with Docker Swarm — FTU Labs
+            Dựng cụm máy tính 40 node (Cluster) cho LLM bằng Docker Swarm — FTU Labs
         </title>
         <meta
             name="description"
-            content="How we turned 88 commodity i7 laptops into a multi-agent LLM cluster using Docker Swarm, llama.cpp, CrewAI, and nginx load balancing."
+            content="Cách tụi mình biến 88 chiếc laptop i7 cũ thành một cụm LLM đa tác vụ (Multi-agent) bằng Docker Swarm, llama.cpp, CrewAI và cân bằng tải qua nginx."
         />
         <link rel="icon" href="/img/logo.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -29,13 +29,13 @@
                 >
                 <div class="nav-actions">
                     <div class="nav-links">
-                        <a href="../projects.html">projects</a>
-                        <a href="../team.html">team</a>
-                        <a href="../research.html">research</a>
+                        <a href="../projects.html">dự án</a>
+                        <a href="../team.html">đội ngũ</a>
+                        <a href="../research.html">nghiên cứu</a>
                         <a href="../blog.html">blog</a>
                     </div>
-                    <div class="lang-switch" aria-label="Language"></div>
-                    <button class="theme-toggle" aria-label="Toggle theme">
+                    <div class="lang-switch" aria-label="Ngôn ngữ"></div>
+                    <button class="theme-toggle" aria-label="Đổi giao diện">
                         <svg class="icon-moon" viewBox="0 0 24 24">
                             <path
                                 d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
@@ -53,59 +53,47 @@
                             <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
                         </svg>
                     </button>
-                    <button class="nav-toggle" aria-label="Toggle menu">
+                    <button class="nav-toggle" aria-label="Mở menu">
                         <span></span><span></span><span></span>
                     </button>
                 </div>
             </div>
         </nav>
         <div class="nav-mobile">
-            <a href="../projects.html">projects</a>
-            <a href="../team.html">team</a>
-            <a href="../research.html">research</a>
+            <a href="../projects.html">dự án</a>
+            <a href="../team.html">đội ngũ</a>
+            <a href="../research.html">nghiên cứu</a>
             <a href="../blog.html">blog</a>
         </div>
 
         <main class="page">
             <div class="container">
                 <a href="../blog.html" class="post-back animate"
-                    >&larr; back to blog</a
+                    >&larr; quay lại blog</a
                 >
 
                 <header class="post-header animate animate-d1">
                     <h1 class="post-title">
-                        Building a 40-Node LLM Cluster with Docker Swarm
+                        Dựng cụm máy tính 40 node (Cluster) cho LLM bằng Docker Swarm
                     </h1>
                     <div class="post-meta">
-                        2026-02-25 &middot; FTU Labs &middot; 8 min read
+                        2026-02-25 &middot; FTU Labs &middot; 8 phút đọc
                     </div>
                 </header>
 
                 <article class="post-content animate animate-d2">
                     <p>
-                        We had 88 instances of i7-13700H laptops with 16GB RAM
-                        and Intel UHD 770 GPUs sitting in a lab. We wanted to
-                        turn them into a self-hosted LLM inference cluster that
-                        runs 24/7 &mdash; no cloud, no API keys, no budget.
-                        Here&rsquo;s how we did it.
+                        Tụi mình có sẵn 88 chiếc laptop dùng chip i7-13700H, RAM 16GB và card đồ họa tích hợp Intel UHD 770 trong phòng lab. Thay vì để không, tụi mình muốn biến chúng thành một cụm máy tính tự vận hành để suy luận (inference) LLM chạy 24/7 — không dùng cloud, không tốn tiền mua API key, không mất đồng xu lẻ nào. Và đây là cách tụi mình đã thực hiện.
                     </p>
                     <p>
-                        The cluster is live at
-                        <a href="https://swarm.ftds.online">swarm.ftds.online</a
-                        >. Source code:
-                        <a href="https://github.com/ftulabs/cluster"
-                            >ftulabs/cluster</a
-                        >.
+                        Cụm máy tính này hiện đang chạy tại
+                        <a href="https://swarm.ftds.online">swarm.ftds.online</a>. Toàn bộ mã nguồn có tại:
+                        <a href="https://github.com/ftulabs/cluster">ftulabs/cluster</a>.
                     </p>
 
-                    <h2>Architecture</h2>
+                    <h2>Kiến trúc hệ thống</h2>
                     <p>
-                        The design is straightforward: one leader node runs the
-                        orchestrator, load balancer, and monitoring stack. The
-                        remaining nodes are workers, each running a quantized
-                        LLM via <strong>llama.cpp</strong>. An Nvidia Jetson
-                        Xavier runs a larger 35B MoE model with CUDA for
-                        higher-quality responses.
+                        Thiết kế khá đơn giản: một node chính (leader) sẽ chạy bộ điều phối (Orchestrator), bộ cân bằng tải (Load Balancer) và hệ thống theo dõi (Monitoring). Các node còn lại đóng vai trò công việc (worker), mỗi máy sẽ chạy một mô hình LLM đã được lượng tử hóa (Quantized) thông qua công cụ <strong>llama.cpp</strong>. Ngoài ra, tụi mình có một chiếc Nvidia Jetson Xavier để chạy model 35B MoE lớn hơn bằng CUDA nhằm cho ra các câu trả lời chất lượng cao hơn.
                     </p>
 
                     <pre><code class="language-plaintext">┌──────────────────────────────────────────────────────────┐
@@ -123,57 +111,30 @@
 │  └──────┬──────┬────────┘                                │
 │    ┌────▼──┐ ┌─▼────────────────────────────────────┐    │
 │    │Xavier │ │ 40 x i7 Workers (Swarm, :8080)       │    │
-│    │35B MoE│ │ Qwen3.5-4B each, round-robin         │    │
+│    │35B MoE│ │ Qwen3.5-4B mỗi node, round-robin     │    │
 │    │CUDA   │ └──────────────────────────────────────┘    │
 │    │:8081  │                                             │
 │    └───────┘                                             │
 └──────────────────────────────────────────────────────────┘</code></pre>
 
-                    <h2>Stack</h2>
+                    <h2>Công nghệ sử dụng</h2>
                     <ul>
-                        <li>
-                            <strong>Docker Swarm</strong> &mdash; orchestration
-                            across all 40+ nodes
-                        </li>
-                        <li>
-                            <strong>llama.cpp</strong> &mdash; GGUF model
-                            inference, OpenAI-compatible API on each worker
-                        </li>
-                        <li>
-                            <strong>nginx</strong> &mdash; weighted round-robin
-                            proxy (Xavier gets 4x weight, workers get 1x)
-                        </li>
-                        <li>
-                            <strong>CrewAI</strong> &mdash; multi-agent
-                            orchestrator on the leader node
-                        </li>
-                        <li>
-                            <strong>Redis</strong> &mdash; shared state store
-                        </li>
-                        <li>
-                            <strong>Prometheus + Grafana</strong> &mdash;
-                            metrics and dashboards
-                        </li>
-                        <li>
-                            <strong>Open WebUI</strong> &mdash; chat interface
-                            at port 3001
-                        </li>
-                        <li>
-                            <strong>Ansible</strong> &mdash; automated bootstrap
-                            for all nodes
-                        </li>
+                        <li><strong>Docker Swarm</strong>: điều phối (Orchestration) trên toàn bộ hơn 40 node.</li>
+                        <li><strong>llama.cpp</strong>: thực hiện suy luận (Inference) mô hình GGUF, tạo API tương thích với OpenAI trên mỗi máy worker.</li>
+                        <li><strong>nginx</strong>: làm proxy với thuật toán Round-Robin có trọng số (Weighted Round-Robin) — node Xavier được ưu tiên gấp 4 lần so với các máy i7.</li>
+                        <li><strong>CrewAI</strong>: bộ điều phối đa tác vụ (Multi-agent Orchestrator) chạy trên node chính.</li>
+                        <li><strong>Redis</strong>: lưu trữ trạng thái chung cho cả hệ thống.</li>
+                        <li><strong>Prometheus + Grafana</strong>: theo dõi các chỉ số và hiển thị biểu đồ.</li>
+                        <li><strong>Open WebUI</strong>: giao diện chat tại cổng 3001.</li>
+                        <li><strong>Ansible</strong>: tự động hóa quá trình thiết lập (bootstrap) cho tất cả các node.</li>
                     </ul>
 
-                    <h2>Deployment</h2>
+                    <h2>Quá trình triển khai</h2>
                     <p>
-                        We automated the entire setup with Ansible. A single
-                        playbook handles Docker installation, GPU
-                        auto-detection, Swarm initialization, node labeling,
-                        model distribution (~2.6GB per node), image builds, and
-                        stack deployment.
+                        Tụi mình tự động hóa toàn bộ quá trình cài đặt bằng Ansible. Chỉ với một tập lệnh (Playbook), hệ thống sẽ tự động cài Docker, nhận diện card đồ họa GPU, khởi tạo cụm Swarm, dán nhãn các node, phân phối mô hình (~2.6GB/máy), build image và triển khai toàn bộ hạ tầng.
                     </p>
 
-                    <pre><code class="language-ini"># Configure inventory
+                    <pre><code class="language-ini"># Cấu hình danh sách máy
 # ansible/inventory.ini
 [leader]
 10.0.190.65 ansible_user=minh
@@ -181,159 +142,119 @@
 [workers]
 10.0.190.101 ansible_user=worker
 10.0.190.102 ansible_user=worker
-# ... up to 40 nodes
+# ... danh sách lên tới 40 node
 
-# Run bootstrap
+# Chạy quá trình thiết lập
 ansible-playbook -i ansible/inventory.ini ansible/bootstrap.yml
 
-# Verify
+# Kiểm tra kết quả
 curl http://10.0.190.65:8888/v1/models
-curl http://10.0.190.65:3001  # Web UI</code></pre>
+curl http://10.0.190.65:3001  # Giao diện Web UI</code></pre>
 
                     <p>
-                        For quick local testing, you can spin up a single node
-                        with Docker Compose:
+                        Nếu bạn muốn test nhanh trên máy cá nhân, bạn có thể chạy một node duy nhất bằng Docker Compose:
                     </p>
 
                     <pre><code class="language-bash">./scripts/download-model.sh
 docker compose -f docker-compose.local.yml up -d
 ./scripts/test-agent.sh</code></pre>
 
-                    <h2>Routing &amp; Load Balancing</h2>
+                    <h2>Cơ chế định tuyến và Cân bằng tải</h2>
                     <p>
-                        nginx handles request routing with weighted round-robin.
-                        The Xavier node (35B MoE model, ~11.4 tok/s with CUDA)
-                        gets <code>weight=4</code>, absorbing ~80% of traffic
-                        when idle. The 40 worker nodes (Qwen3.5-4B, ~2 tok/s
-                        each, 4 parallel slots per node) handle overflow under
-                        heavy load.
+                        nginx đóng vai trò định tuyến các yêu cầu (request) bằng thuật toán Round-Robin có trọng số. Node Xavier (chạy model 35B MoE, tốc độ khoảng 11.4 token/giây bằng CUDA) được gán <code>weight=4</code>, giúp nó xử lý khoảng 80% lưu lượng truy cập khi rảnh. 40 node worker (chạy Qwen3.5-4B, tốc độ ~2 token/máy/giây, mỗi máy có 4 khe xử lý song song) sẽ đảm nhận phần việc còn lại khi hệ thống bị quá tải.
                     </p>
                     <p>
-                        Under &gt;4 concurrent users, requests automatically
-                        spill into the worker pool. The API is fully
-                        OpenAI-compatible &mdash; any tool that speaks the
-                        OpenAI API works out of the box, no API key required on
-                        the LAN.
+                        Khi có hơn 4 người dùng cùng lúc, các yêu cầu sẽ tự động được đẩy vào nhóm máy worker. API của hệ thống hoàn toàn tương thích với chuẩn OpenAI — nghĩa là bất kỳ công cụ nào hỗ trợ OpenAI API đều có thể dùng ngay lập tức mà không cần API key trong mạng nội bộ.
                     </p>
 
-                    <pre><code class="language-bash"># Chat via API (works with any OpenAI-compatible client)
+                    <pre><code class="language-bash"># Chat qua API (dùng được với bất kỳ client nào hỗ trợ OpenAI)
 curl http://10.0.190.65:8888/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{
     "model": "gpt-3.5-turbo",
-    "messages": [{"role":"user","content":"Hello!"}],
+    "messages": [{"role":"user","content":"Xin chào!"}],
     "max_tokens": 500
   }'</code></pre>
 
-                    <h2>Multi-Agent Orchestration</h2>
+                    <h2>Điều phối đa tác vụ (Multi-Agent Orchestration)</h2>
                     <p>
-                        The CrewAI master service on the leader node coordinates
-                        multi-agent workflows. You submit a goal, and the
-                        orchestrator distributes sub-tasks across available
-                        workers, tracks progress in Redis, and returns
-                        aggregated results.
+                        Dịch vụ CrewAI master trên node leader sẽ điều phối các quy trình làm việc đa tác vụ. Bạn chỉ cần gửi một mục tiêu (Goal), bộ điều phối sẽ tự động chia nhỏ thành các nhiệm vụ con cho các worker, theo dõi tiến độ qua Redis và trả về kết quả cuối cùng sau khi đã tổng hợp xong.
                     </p>
 
-                    <pre><code class="language-bash"># Submit a goal
+                    <pre><code class="language-bash"># Gửi một mục tiêu
 curl -X POST http://localhost:9091/goal \
   -H "Content-Type: application/json" \
-  -d '{"goal": "Analyze the top 5 programming languages by popularity"}'
+  -d '{"goal": "Phân tích 5 ngôn ngữ lập trình phổ biến nhất hiện nay"}'
 
-# Check workers
+# Kiểm tra các máy worker
 curl http://localhost:9091/workers
 
-# Check performance
+# Xem hiệu năng hệ thống
 curl http://localhost:9091/performance
 
-# Trigger calibration
+# Kích hoạt quá trình căn chỉnh máy chủ
 curl -X POST http://localhost:9091/calibrate</code></pre>
 
-                    <h2>Services Overview</h2>
+                    <h2>Tổng quan các dịch vụ</h2>
                     <table>
                         <thead>
                             <tr>
-                                <th>Service</th>
-                                <th>Port</th>
-                                <th>Description</th>
+                                <th>Dịch vụ</th>
+                                <th>Cổng</th>
+                                <th>Mô tả</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>Worker (LLM)</td>
                                 <td>8080</td>
-                                <td>llama.cpp server, OpenAI-compatible API</td>
+                                <td>Server llama.cpp, API chuẩn OpenAI</td>
                             </tr>
                             <tr>
-                                <td>Master (Orchestrator)</td>
+                                <td>Master (Điều phối)</td>
                                 <td>9091</td>
-                                <td>CrewAI orchestrator, POST /goal</td>
+                                <td>Bộ điều phối CrewAI, nhận yêu cầu tại /goal</td>
                             </tr>
                             <tr>
                                 <td>Open WebUI</td>
                                 <td>3001</td>
-                                <td>Chat interface</td>
+                                <td>Giao diện chat chính</td>
                             </tr>
                             <tr>
                                 <td>nginx proxy</td>
                                 <td>8888</td>
-                                <td>Weighted round-robin LLM proxy</td>
+                                <td>Proxy cân bằng LLM theo trọng số</td>
                             </tr>
                             <tr>
                                 <td>Redis</td>
                                 <td>6379</td>
-                                <td>State store</td>
+                                <td>Lưu trữ trạng thái hệ thống</td>
                             </tr>
                             <tr>
                                 <td>Prometheus</td>
                                 <td>9090</td>
-                                <td>Metrics</td>
+                                <td>Theo dõi chỉ số</td>
                             </tr>
                             <tr>
                                 <td>Grafana</td>
                                 <td>3000</td>
-                                <td>Dashboards</td>
+                                <td>Bảng biểu (Dashboard)</td>
                             </tr>
                         </tbody>
                     </table>
 
-                    <h2>What We Learned</h2>
+                    <h2>Những gì tụi mình đã học được</h2>
                     <ul>
-                        <li>
-                            Quantized 4B models on CPU are slow (~2 tok/s) but
-                            usable when you have 40 of them behind a load
-                            balancer.
-                        </li>
-                        <li>
-                            Docker Swarm is underrated &mdash; simple, stable,
-                            and good enough for our scale. No need for
-                            Kubernetes.
-                        </li>
-                        <li>
-                            The biggest bottleneck was network setup: getting
-                            40+ machines on the same subnet and keeping them
-                            there reliably.
-                        </li>
-                        <li>
-                            Ansible made the difference between &ldquo;this will
-                            take a week&rdquo; and &ldquo;this takes 20
-                            minutes.&rdquo;
-                        </li>
+                      <li>Các mô hình lượng tử hóa 4B chạy trên CPU tuy chậm (~2 token/giây) nhưng hoàn toàn có thể dùng được nếu bạn có 40 máy chạy song song đằng sau một bộ cân bằng tải.</li>
+                      <li>Docker Swarm thực sự bị đánh giá thấp — nó đơn giản, ổn định và đủ tốt cho quy mô của tụi mình. Không cần phải dùng tới Kubernetes làm gì cho phức tạp.</li>
+                      <li>Điểm nghẽn (bottleneck) lớn nhất lại nằm ở phần thiết lập mạng: làm sao để kết nối hơn 40 máy vào cùng một mạng con (subnet) và duy trì kết nối ổn định.</li>
+                      <li>Ansible chính là chìa khóa giúp rút ngắn thời gian từ "mất một tuần để cài đặt" xuống còn "chỉ mất 20 phút".</li>
                     </ul>
 
-                    <h2>Links</h2>
+                    <h2>Liên kết hữu ích</h2>
                     <ul>
-                        <li>
-                            <a href="https://swarm.ftds.online"
-                                >swarm.ftds.online</a
-                            >
-                            &mdash; live cluster
-                        </li>
-                        <li>
-                            <a href="https://github.com/ftulabs/cluster"
-                                >ftulabs/cluster</a
-                            >
-                            &mdash; source code, deployment docs, benchmarks
-                        </li>
+                        <li><a href="https://swarm.ftds.online">swarm.ftds.online</a> — cụm máy tính đang hoạt động</li>
+                        <li><a href="https://github.com/ftulabs/cluster">ftulabs/cluster</a> — mã nguồn, hướng dẫn triển khai và các bài test hiệu năng</li>
                     </ul>
                 </article>
             </div>
