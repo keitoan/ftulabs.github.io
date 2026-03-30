@@ -1,96 +1,179 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Scaling Transformer Inference with Custom CUDA Kernels — FTU Labs</title>
-  <meta name="description" content="How we achieved 3x inference speedup on A100 GPUs by writing custom fused attention kernels.">
-  <link rel="icon" href="../img/logo.png">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/geist@1.3.1/dist/fonts/geist-mono/style.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../css/style.css">
-</head>
-<body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            Scaling Transformer Inference with Custom CUDA Kernels — FTU Labs
+        </title>
+        <meta
+            name="description"
+            content="How we achieved 3x inference speedup on A100 GPUs by writing custom fused attention kernels."
+        />
+        <link rel="icon" href="../img/logo.png" />
 
-  <nav class="nav">
-    <div class="nav-inner">
-      <a href="../index.html" class="nav-logo"><img src="../img/logo.png" alt="FTU">FTU Labs</a>
-      <div class="nav-actions">
-        <div class="nav-links">
-          <a href="../projects.html">projects</a>
-          <a href="../team.html">team</a>
-          <a href="../research.html">research</a>
-          <a href="../blog.html">blog</a>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap"
+            rel="stylesheet"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/atom-one-dark.min.css"
+        />
+        <link rel="stylesheet" href="../css/style.css" />
+    </head>
+    <body>
+        <nav class="nav">
+            <div class="nav-inner">
+                <a href="../index.html" class="nav-logo"
+                    ><img src="../img/logo.png" alt="FTU" />FTU Labs</a
+                >
+                <div class="nav-actions">
+                    <div class="nav-links">
+                        <a href="../projects.html">projects</a>
+                        <a href="../team.html">team</a>
+                        <a href="../research.html">research</a>
+                        <a href="../blog.html">blog</a>
+                    </div>
+                    <button class="theme-toggle" aria-label="Toggle theme">
+                        <svg class="icon-moon" viewBox="0 0 24 24">
+                            <path
+                                d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
+                            />
+                        </svg>
+                        <svg class="icon-sun" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="5" />
+                            <line x1="12" y1="1" x2="12" y2="3" />
+                            <line x1="12" y1="21" x2="12" y2="23" />
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                            <line x1="1" y1="12" x2="3" y2="12" />
+                            <line x1="21" y1="12" x2="23" y2="12" />
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                        </svg>
+                    </button>
+                    <button class="nav-toggle" aria-label="Toggle menu">
+                        <span></span><span></span><span></span>
+                    </button>
+                </div>
+            </div>
+        </nav>
+        <div class="nav-mobile">
+            <a href="../projects.html">projects</a>
+            <a href="../team.html">team</a>
+            <a href="../research.html">research</a>
+            <a href="../blog.html">blog</a>
         </div>
-        <button class="theme-toggle" aria-label="Toggle theme">
-          <svg class="icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-          <svg class="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-        </button>
-        <button class="nav-toggle" aria-label="Toggle menu">
-          <span></span><span></span><span></span>
-        </button>
-      </div>
-    </div>
-  </nav>
-  <div class="nav-mobile">
-    <a href="../projects.html">projects</a>
-    <a href="../team.html">team</a>
-    <a href="../research.html">research</a>
-    <a href="../blog.html">blog</a>
-  </div>
 
-  <main class="page">
-    <div class="container">
+        <main class="page">
+            <div class="container">
+                <a href="../blog.html" class="post-back animate"
+                    >&larr; back to blog</a
+                >
 
-      <a href="../blog.html" class="post-back animate">&larr; back to blog</a>
+                <header class="post-header animate animate-d1">
+                    <h1 class="post-title">
+                        Scaling Transformer Inference with Custom CUDA Kernels
+                    </h1>
+                    <div class="post-meta">
+                        2026-03-15 &middot; Minh Tran, Alex Rivera &middot; 12
+                        min read
+                    </div>
+                </header>
 
-      <header class="post-header animate animate-d1">
-        <h1 class="post-title">Scaling Transformer Inference with Custom CUDA Kernels</h1>
-        <div class="post-meta">2026-03-15 &middot; Minh Tran, Alex Rivera &middot; 12 min read</div>
-      </header>
+                <article class="post-content animate animate-d2">
+                    <figure>
+                        <img
+                            src="../img/1.ftu-ai-2.jpg"
+                            alt="Placeholder image"
+                        />
+                        <figcaption>Just a placeholder image</figcaption>
+                    </figure>
 
-      <article class="post-content animate animate-d2">
-        <p>
-          When we started optimizing inference for FTU-7B, our initial benchmarks showed that standard PyTorch attention was the primary bottleneck — accounting for roughly 60% of total inference time on A100 GPUs. This post describes how we wrote custom CUDA kernels to achieve a 3x speedup, and the lessons we learned along the way.
-        </p>
+                    <p>
+                        When we started optimizing inference for FTU-7B, our
+                        initial benchmarks showed that standard PyTorch
+                        attention was the primary bottleneck &mdash; accounting
+                        for roughly 60% of total inference time on A100 GPUs.
+                        This post describes how we wrote custom CUDA kernels to
+                        achieve a 3x speedup, and the lessons we learned along
+                        the way.
+                    </p>
 
-        <h2>The Problem: Memory-Bound Attention</h2>
-        <p>
-          Transformer attention is fundamentally a memory-bound operation. The standard implementation materializes the full N&times;N attention matrix, requiring O(N&sup2;) memory and bandwidth. For long sequences (4K+ tokens), this becomes the dominant cost — not because of compute, but because of how data moves between GPU memory hierarchies.
-        </p>
-        <p>
-          Our profiling revealed that the standard attention path spent most of its time waiting for memory transfers rather than doing useful computation. The arithmetic intensity was well below what the A100 can sustain:
-        </p>
+                    <h2>The Problem: Memory-Bound Attention</h2>
+                    <p>
+                        Transformer attention is fundamentally a memory-bound
+                        operation. The standard implementation materializes the
+                        full N&times;N attention matrix, requiring O(N&sup2;)
+                        memory and bandwidth. For long sequences (4K+ tokens),
+                        this becomes the dominant cost &mdash; not because of
+                        compute, but because of how data moves between GPU
+                        memory hierarchies.
+                    </p>
+                    <p>
+                        Our profiling revealed that the standard attention path
+                        spent most of its time waiting for memory transfers
+                        rather than doing useful computation. The arithmetic
+                        intensity was well below what the A100 can sustain:
+                    </p>
 
-<pre><code># Profiling results (A100 80GB, batch=1, seq_len=4096)
+                    <pre><code class="language-plaintext"># Profiling results (A100 80GB, batch=1, seq_len=4096)
 Standard Attention:     142ms  (memory bandwidth: 1.2 TB/s)
 cuBLAS GEMM (Q&times;K):      38ms
 Softmax:                 24ms
 cuBLAS GEMM (A&times;V):      36ms
 Memory allocation:       44ms  &larr; the hidden cost</code></pre>
 
-        <p>
-          That 44ms spent on memory allocation alone was a red flag. Every forward pass was allocating and deallocating temporary buffers for the attention matrix — a pattern that's optimized away in Flash Attention but present in many standard implementations.
-        </p>
+                    <p>
+                        That 44ms spent on memory allocation alone was a red
+                        flag. Every forward pass was allocating and deallocating
+                        temporary buffers for the attention matrix &mdash; a
+                        pattern that's optimized away in Flash Attention but
+                        present in many standard implementations.
+                    </p>
 
-        <h2>Our Approach: Fused Tiled Attention</h2>
-        <p>
-          Rather than computing attention in separate GEMM &rarr; softmax &rarr; GEMM stages, we fuse everything into a single kernel that operates on tiles of the input. This is conceptually similar to <a href="#">Flash Attention</a>, but with several modifications specific to our model architecture:
-        </p>
-        <ul>
-          <li><strong>Grouped-query attention (GQA)</strong> — FTU-7B uses 8 KV heads shared across 32 query heads, requiring careful shared memory management</li>
-          <li><strong>RoPE integration</strong> — We compute rotary position embeddings inside the kernel rather than as a separate pre-processing step</li>
-          <li><strong>Online softmax with FP32 accumulators</strong> — Maintaining numerical stability while keeping the data path in FP16/BF16</li>
-        </ul>
+                    <h2>Our Approach: Fused Tiled Attention</h2>
+                    <p>
+                        Rather than computing attention in separate GEMM &rarr;
+                        softmax &rarr; GEMM stages, we fuse everything into a
+                        single kernel that operates on tiles of the input. This
+                        is conceptually similar to
+                        <a href="#">Flash Attention</a>, but with several
+                        modifications specific to our model architecture:
+                    </p>
+                    <ul>
+                        <li>
+                            <strong>Grouped-query attention (GQA)</strong>
+                            &mdash; FTU-7B uses 8 KV heads shared across 32
+                            query heads, requiring careful shared memory
+                            management
+                        </li>
+                        <li>
+                            <strong>RoPE integration</strong> &mdash; We compute
+                            rotary position embeddings inside the kernel rather
+                            than as a separate pre-processing step
+                        </li>
+                        <li>
+                            <strong
+                                >Online softmax with FP32 accumulators</strong
+                            >
+                            &mdash; Maintaining numerical stability while
+                            keeping the data path in FP16/BF16
+                        </li>
+                    </ul>
 
-        <h2>Implementation Details</h2>
-        <p>
-          The core idea is to tile the computation so that each thread block processes a block of queries against all key-value pairs, accumulating the output in shared memory:
-        </p>
+                    <h2>Implementation Details</h2>
+                    <p>
+                        The core idea is to tile the computation so that each
+                        thread block processes a block of queries against all
+                        key-value pairs, accumulating the output in shared
+                        memory:
+                    </p>
 
-<pre><code>// Simplified kernel structure (actual implementation is ~800 lines)
+                    <pre><code class="language-cpp">// Simplified kernel structure (actual implementation is ~800 lines)
 __global__ void fused_attention_kernel(
     const half* __restrict__ Q,
     const half* __restrict__ K,
@@ -126,53 +209,135 @@ __global__ void fused_attention_kernel(
     store_output(O, acc, row_sum, q_start);
 }</code></pre>
 
-        <h2>Results</h2>
-        <p>
-          After several iterations of tuning tile sizes, shared memory layout, and warp scheduling, we achieved significant improvements across all sequence lengths:
-        </p>
+                    <p>
+                        We compile the kernel ahead of time to avoid JIT
+                        overhead in production:
+                    </p>
 
-        <blockquote>
-          The key insight was not algorithmic — it was about understanding the GPU memory hierarchy deeply enough to keep the SMs fed with data at every cycle.
-        </blockquote>
+                    <pre><code class="language-bash"># Compile for A100 (SM 8.0) and H100 (SM 9.0)
+nvcc -O3 -arch=sm_80 -gencode=arch=compute_90,code=sm_90 \
+     --use_fast_math -lineinfo \
+     -o fused_attn.so --shared fused_attention.cu
 
-        <p>
-          On our standard benchmark (A100 80GB, BF16, batch size 1):
-        </p>
-        <ul>
-          <li>Seq 2048: <strong>2.1x speedup</strong> (68ms &rarr; 32ms)</li>
-          <li>Seq 4096: <strong>2.8x speedup</strong> (142ms &rarr; 51ms)</li>
-          <li>Seq 8192: <strong>3.2x speedup</strong> (412ms &rarr; 129ms)</li>
-          <li>Seq 16384: <strong>3.4x speedup</strong> (1.6s &rarr; 470ms)</li>
-        </ul>
+# Run the benchmark suite
+python bench.py --kernel fused --seq-lengths 2048 4096 8192 16384</code></pre>
 
-        <h2>Lessons Learned</h2>
-        <p>
-          Writing CUDA kernels is as much art as science. Here are the non-obvious lessons from this project:
-        </p>
-        <ol>
-          <li><strong>Profile before you optimize.</strong> Our initial assumption was that the GEMM operations were the bottleneck. They weren't — memory allocation and data layout were.</li>
-          <li><strong>Shared memory bank conflicts are real.</strong> A 2-line change to our memory layout (adding padding to avoid bank conflicts) gave us a 15% speedup.</li>
-          <li><strong>Test numerics obsessively.</strong> FP16 accumulation introduced subtle errors that only manifested at long sequence lengths. FP32 accumulators are non-negotiable.</li>
-        </ol>
+                    <h2>Results</h2>
+                    <p>
+                        After several iterations of tuning tile sizes, shared
+                        memory layout, and warp scheduling, we achieved
+                        significant improvements across all sequence lengths:
+                    </p>
 
-        <p>
-          The full kernel implementation is available in our <a href="#">FlashKernel repository</a>. We welcome contributions and benchmarks on other GPU architectures.
-        </p>
-      </article>
+                    <blockquote>
+                        The key insight was not algorithmic &mdash; it was about
+                        understanding the GPU memory hierarchy deeply enough to
+                        keep the SMs fed with data at every cycle.
+                    </blockquote>
 
-    </div>
-  </main>
+                    <p>
+                        On our standard benchmark (A100 80GB, BF16, batch size
+                        1):
+                    </p>
+                    <ul>
+                        <li>
+                            Seq 2048: <strong>2.1x speedup</strong> (68ms &rarr;
+                            32ms)
+                        </li>
+                        <li>
+                            Seq 4096: <strong>2.8x speedup</strong> (142ms
+                            &rarr; 51ms)
+                        </li>
+                        <li>
+                            Seq 8192: <strong>3.2x speedup</strong> (412ms
+                            &rarr; 129ms)
+                        </li>
+                        <li>
+                            Seq 16384: <strong>3.4x speedup</strong> (1.6s
+                            &rarr; 470ms)
+                        </li>
+                    </ul>
 
-  <footer class="footer">
-    <div class="footer-inner">
-      <span class="footer-copy">&copy; 2026 FTU Labs</span>
-      <div class="footer-links">
-        <a href="https://github.com/ftulabs">GitHub</a>
-        <a href="https://twitter.com/ftulabs">Twitter</a>
-      </div>
-    </div>
-  </footer>
+                    <h2>Packaging for Deployment</h2>
+                    <p>
+                        To keep the inference environment reproducible across
+                        machines, we containerize everything with a multi-stage
+                        Docker build:
+                    </p>
 
-  <script src="../js/main.js"></script>
-</body>
+                    <pre><code class="language-dockerfile"># Stage 1: compile the CUDA kernel
+FROM nvidia/cuda:12.4.1-devel-ubuntu22.04 AS builder
+WORKDIR /build
+COPY kernels/ ./kernels/
+RUN nvcc -O3 -arch=sm_80 --use_fast_math \
+        -o fused_attn.so --shared kernels/fused_attention.cu
+
+# Stage 2: slim runtime image
+FROM nvidia/cuda:12.4.1-runtime-ubuntu22.04
+RUN apt-get update &amp;&amp; apt-get install -y --no-install-recommends \
+        python3 python3-pip &amp;&amp; \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY --from=builder /build/fused_attn.so /app/lib/
+COPY requirements.txt .
+RUN pip3 install --no-cache-dir -r requirements.txt
+COPY src/ ./src/
+
+EXPOSE 8000
+CMD ["python3", "-m", "uvicorn", "src.api:app", "--host", "0.0.0.0", "--port", "8000"]</code></pre>
+
+                    <pre><code class="language-bash"># Build and run
+docker build -t ftu-inference .
+docker run --gpus all -p 8000:8000 ftu-inference</code></pre>
+
+                    <h2>Lessons Learned</h2>
+                    <p>
+                        Writing CUDA kernels is as much art as science. Here are
+                        the non-obvious lessons from this project:
+                    </p>
+                    <ol>
+                        <li>
+                            <strong>Profile before you optimize.</strong> Our
+                            initial assumption was that the GEMM operations were
+                            the bottleneck. They weren't &mdash; memory
+                            allocation and data layout were.
+                        </li>
+                        <li>
+                            <strong
+                                >Shared memory bank conflicts are real.</strong
+                            >
+                            A 2-line change to our memory layout (adding padding
+                            to avoid bank conflicts) gave us a 15% speedup.
+                        </li>
+                        <li>
+                            <strong>Test numerics obsessively.</strong> FP16
+                            accumulation introduced subtle errors that only
+                            manifested at long sequence lengths. FP32
+                            accumulators are non-negotiable.
+                        </li>
+                    </ol>
+
+                    <p>
+                        The full kernel implementation is available in our
+                        <a href="#">FlashKernel repository</a>. We welcome
+                        contributions and benchmarks on other GPU architectures.
+                    </p>
+                </article>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <div class="footer-inner">
+                <span class="footer-copy">&copy; 2026 FTU Labs</span>
+                <div class="footer-links">
+                    <a href="https://github.com/ftulabs">GitHub</a>
+                    <a href="https://twitter.com/ftulabs">Twitter</a>
+                </div>
+            </div>
+        </footer>
+
+        <script src="../js/main.js"></script>
+        <script src="../js/hljs.js"></script>
+    </body>
 </html>
