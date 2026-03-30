@@ -203,18 +203,25 @@ main (protected — always deployable)
 
 ```
 ftulabs.github.io/
-├── index.html            # Home page
-├── blog.html             # Blog listing page
-├── projects.html         # Projects page
-├── team.html             # Team members page
-├── research.html         # Research publications page
+├── index.html              # Home page
+├── blog.html               # Blog listing page
+├── projects.html           # Projects page
+├── team.html               # Team members page
+├── research.html           # Research publications page
 ├── css/
-│   └── style.css         # Global stylesheet (theme colors, layout, components)
+│   └── style.css           # Global stylesheet (theme, layout, scrollbar, copy button, hljs overrides)
 ├── js/
-│   └── main.js           # Navigation toggle & scroll reveal animations
-├── assets/               # Images, videos, and other media files
+│   ├── main.js             # Navigation toggle & scroll reveal animations
+│   └── hljs.js             # Highlight.js loader + copy button injection
+├── img/
+│   ├── logo.png            # Site logo
+│   └── copy.svg            # Copy icon source (inlined in hljs.js)
 └── blog/
-    └── post-template.html  # Example blog post (use as template for new posts)
+    ├── post-template.html  # Blog post template (use as starting point for new posts)
+    ├── 1.ftu-ai.html
+    ├── 2.lms.html
+    ├── 3.swarm.html
+    └── 4.introduction.html
 ```
 
 ## Adding New Content
@@ -260,7 +267,11 @@ Add the loader script before `</body>`, after `main.js`:
 <script src="../js/hljs.js"></script>
 ```
 
-The theme (`atom-one-dark`) provides the standard syntax colors. The site's `css/style.css` loads after it and overrides only the code block background to match the site theme. The script (`js/hljs.js`) fetches the Highlight.js core from the CDN, loads the extra language modules (LaTeX, Dockerfile, INI), and calls `hljs.highlightAll()` automatically.
+The theme (`atom-one-dark`) provides the standard syntax colors. The site's `css/style.css` loads after it and overrides only the code block background to match the site theme. The script (`js/hljs.js`) fetches the Highlight.js core from the CDN, loads the extra language modules (LaTeX, Dockerfile, INI), calls `hljs.highlightAll()`, and injects a **copy button** into every `<pre>` block automatically.
+
+#### Copy button
+
+Every code block gets a copy-to-clipboard button (top-right corner, visible on hover). This is handled entirely by `js/hljs.js` — no extra markup needed. The button uses an inline SVG icon and briefly shows a checkmark after copying. Styling lives in `css/style.css` under `.copy-btn`.
 
 > **Note:** The default Highlight.js build covers ~40 common languages (bash, python, javascript, json, yaml, css, markdown, etc.) but does not include LaTeX, Dockerfile, or INI — those are bundled by `hljs.js`. To add more languages, edit the `queue` array in `js/hljs.js` (see the [full language list](https://highlightjs.org/download)).
 
