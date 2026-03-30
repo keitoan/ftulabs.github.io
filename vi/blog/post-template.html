@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tăng tốc Transformer Inference với Custom CUDA Kernels — FTU Labs</title>
+  <meta name="description" content="Cách chúng tôi đạt được tốc độ inference nhanh gấp 3 lần trên GPU A100 bằng cách viết custom fused attention kernel.">
+  <link rel="icon" href="../../img/logo.png">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/geist@1.3.1/dist/fonts/geist-mono/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="../../index.html" class="nav-logo"><img src="../../img/logo.png" alt="FTU">FTU Labs</a>
+      <div class="nav-actions">
+        <div class="nav-links">
+          <a href="../../projects.html">dự án</a>
+          <a href="../../team.html">đội ngũ</a>
+          <a href="../../research.html">nghiên cứu</a>
+          <a href="../../blog.html">blog</a>
+        </div>
+        <div class="lang-switch" aria-label="Language"></div>
+        <button class="theme-toggle" aria-label="Toggle theme">
+          <svg class="icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          <svg class="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </button>
+        <button class="nav-toggle" aria-label="Toggle menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+  <div class="nav-mobile">
+    <a href="../../projects.html">dự án</a>
+    <a href="../../team.html">đội ngũ</a>
+    <a href="../../research.html">nghiên cứu</a>
+    <a href="../../blog.html">blog</a>
+  </div>
+
+  <main class="page">
+    <div class="container">
+
+      <a href="../../blog.html" class="post-back animate">&larr; quay lại blog</a>
+
+      <header class="post-header animate animate-d1">
+        <h1 class="post-title">Tăng tốc Transformer Inference với Custom CUDA Kernels</h1>
+        <div class="post-meta">2026-03-15 &middot; Minh Tran, Alex Rivera &middot; 12 phút đọc</div>
+      </header>
+
+      <article class="post-content animate animate-d2">
+        <p>
+          Khi chúng tôi bắt đầu tối ưu hóa inference cho FTU-7B, các benchmark ban đầu cho thấy attention tiêu chuẩn trong PyTorch là nút thắt cổ chai chính — chiếm khoảng 60% tổng thời gian inference trên GPU A100. Bài viết này mô tả cách chúng tôi viết custom CUDA kernel để đạt tốc độ nhanh gấp 3 lần, và những bài học rút ra trong quá trình đó.
+        </p>
+
+        <h2>Vấn đề: Attention bị giới hạn bởi bộ nhớ</h2>
+        <p>
+          Transformer attention về cơ bản là một phép toán bị giới hạn bởi bộ nhớ. Cách triển khai tiêu chuẩn tạo ra toàn bộ ma trận attention N&times;N, yêu cầu bộ nhớ và băng thông O(N&sup2;). Với các chuỗi dài (4K+ token), đây trở thành chi phí chính — không phải vì tính toán, mà vì cách dữ liệu di chuyển giữa các tầng bộ nhớ của GPU.
+        </p>
+        <p>
+          Kết quả profiling cho thấy attention tiêu chuẩn dành phần lớn thời gian chờ truyền dữ liệu bộ nhớ thay vì thực hiện tính toán hữu ích. Cường độ tính toán (arithmetic intensity) thấp hơn nhiều so với khả năng của A100:
+        </p>
+
+<pre><code># Profiling results (A100 80GB, batch=1, seq_len=4096)
+Standard Attention:     142ms  (memory bandwidth: 1.2 TB/s)
+cuBLAS GEMM (Q&times;K):      38ms
+Softmax:                 24ms
+cuBLAS GEMM (A&times;V):      36ms
+Memory allocation:       44ms  &larr; the hidden cost</code></pre>
+
+        <p>
+          44ms dành riêng cho cấp phát bộ nhớ là một dấu hiệu đáng lo ngại. Mỗi forward pass đều cấp phát và giải phóng các buffer tạm cho ma trận attention — một pattern đã được tối ưu trong Flash Attention nhưng vẫn tồn tại trong nhiều cách triển khai tiêu chuẩn.
+        </p>
+
+        <h2>Cách tiếp cận: Fused Tiled Attention</h2>
+        <p>
+          Thay vì tính attention qua các bước riêng biệt GEMM &rarr; softmax &rarr; GEMM, chúng tôi gộp tất cả vào một kernel duy nhất hoạt động trên các tile của đầu vào. Về mặt khái niệm, cách này tương tự <a href="#">Flash Attention</a>, nhưng với một số điều chỉnh riêng cho kiến trúc mô hình của chúng tôi:
+        </p>
+        <ul>
+          <li><strong>Grouped-query attention (GQA)</strong> — FTU-7B sử dụng 8 KV head chia sẻ cho 32 query head, đòi hỏi quản lý shared memory cẩn thận</li>
+          <li><strong>Tích hợp RoPE</strong> — Chúng tôi tính rotary position embedding ngay trong kernel thay vì thực hiện ở bước tiền xử lý riêng</li>
+          <li><strong>Online softmax với FP32 accumulator</strong> — Duy trì độ ổn định số học trong khi giữ đường dẫn dữ liệu ở FP16/BF16</li>
+        </ul>
+
+        <h2>Chi tiết triển khai</h2>
+        <p>
+          Ý tưởng cốt lõi là chia nhỏ phép tính thành các tile để mỗi thread block xử lý một khối query với tất cả các cặp key-value, tích lũy kết quả đầu ra trong shared memory:
+        </p>
+
+<pre><code>// Simplified kernel structure (actual implementation is ~800 lines)
+__global__ void fused_attention_kernel(
+    const half* __restrict__ Q,
+    const half* __restrict__ K,
+    const half* __restrict__ V,
+    half* __restrict__ O,
+    const int seq_len,
+    const int head_dim
+) {
+    // Each block handles BLOCK_M query positions
+    const int q_start = blockIdx.x * BLOCK_M;
+
+    // Shared memory for Q, K, V tiles
+    __shared__ half smem_q[BLOCK_M][HEAD_DIM];
+    __shared__ half smem_k[BLOCK_N][HEAD_DIM];
+    __shared__ half smem_v[BLOCK_N][HEAD_DIM];
+
+    // Online softmax state
+    float row_max = -INFINITY;
+    float row_sum = 0.0f;
+    float acc[BLOCK_M][HEAD_DIM] = {0};
+
+    // Iterate over K,V blocks
+    for (int kv_start = 0; kv_start &lt; seq_len; kv_start += BLOCK_N) {
+        load_tile(K, smem_k, kv_start);
+        load_tile(V, smem_v, kv_start);
+        __syncthreads();
+
+        // Compute QK^T, apply RoPE, scale, mask
+        // Online softmax update
+        // Accumulate O = softmax(QK^T) * V
+    }
+
+    store_output(O, acc, row_sum, q_start);
+}</code></pre>
+
+        <h2>Kết quả</h2>
+        <p>
+          Sau nhiều vòng tinh chỉnh kích thước tile, bố cục shared memory, và warp scheduling, chúng tôi đạt được cải thiện đáng kể ở mọi độ dài chuỗi:
+        </p>
+
+        <blockquote>
+          Insight quan trọng nhất không nằm ở thuật toán — mà là hiểu sâu về hệ thống phân cấp bộ nhớ GPU đủ để giữ cho các SM luôn được cung cấp dữ liệu ở mọi chu kỳ.
+        </blockquote>
+
+        <p>
+          Trên benchmark tiêu chuẩn của chúng tôi (A100 80GB, BF16, batch size 1):
+        </p>
+        <ul>
+          <li>Seq 2048: <strong>tăng tốc 2.1x</strong> (68ms &rarr; 32ms)</li>
+          <li>Seq 4096: <strong>tăng tốc 2.8x</strong> (142ms &rarr; 51ms)</li>
+          <li>Seq 8192: <strong>tăng tốc 3.2x</strong> (412ms &rarr; 129ms)</li>
+          <li>Seq 16384: <strong>tăng tốc 3.4x</strong> (1.6s &rarr; 470ms)</li>
+        </ul>
+
+        <h2>Bài học rút ra</h2>
+        <p>
+          Viết CUDA kernel vừa là nghệ thuật vừa là khoa học. Dưới đây là những bài học không hiển nhiên từ dự án này:
+        </p>
+        <ol>
+          <li><strong>Profile trước khi tối ưu.</strong> Giả định ban đầu của chúng tôi là các phép toán GEMM là nút thắt cổ chai. Thực tế không phải — cấp phát bộ nhớ và bố cục dữ liệu mới là vấn đề.</li>
+          <li><strong>Shared memory bank conflict là có thật.</strong> Chỉ thay đổi 2 dòng trong bố cục bộ nhớ (thêm padding để tránh bank conflict) đã cho chúng tôi tăng tốc 15%.</li>
+          <li><strong>Kiểm tra độ chính xác số học một cách kỹ lưỡng.</strong> Phép tích lũy FP16 gây ra các lỗi tinh vi chỉ xuất hiện ở các chuỗi dài. FP32 accumulator là bắt buộc, không thỏa hiệp.</li>
+        </ol>
+
+        <p>
+          Toàn bộ mã nguồn kernel có sẵn trong <a href="#">repository FlashKernel</a> của chúng tôi. Chúng tôi hoan nghênh đóng góp và benchmark trên các kiến trúc GPU khác.
+        </p>
+      </article>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <span class="footer-copy">&copy; 2026 FTU Labs</span>
+      <div class="footer-links">
+        <a href="https://github.com/ftulabs">GitHub</a>
+        <a href="https://twitter.com/ftulabs">Twitter</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../../js/main.js"></script>
+  <script src="../../js/l10n.js"></script>
+</body>
+</html>
