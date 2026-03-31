@@ -21,10 +21,11 @@
     js: "javascript",
     yaml: "yaml",
     json: "json",
-    python: "python"
+    python: "python",
   };
 
-  var GENERIC_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>';
+  var GENERIC_ICON =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>';
 
   function enhanceCodeBlocks() {
     var pres = document.querySelectorAll(".post-content pre");
@@ -59,7 +60,7 @@
         // Using explicit simpleicons request with fallback via JS onerror
         img.src = "https://cdn.simpleicons.org/" + slug + "/888888";
         img.alt = langName;
-        img.onerror = function() {
+        img.onerror = function () {
           this.outerHTML = GENERIC_ICON;
         };
         badge.appendChild(img);
@@ -83,17 +84,49 @@
       btn.addEventListener(
         "click",
         (function (b, p) {
+          function showCopied(btn) {
+            btn.innerHTML = CHECK_SVG;
+            btn.classList.add("copied");
+            setTimeout(function () {
+              btn.innerHTML = COPY_SVG;
+              btn.classList.remove("copied");
+            }, 1500);
+          }
+
+          function fallbackCopy(text) {
+            var ta = document.createElement("textarea");
+            ta.value = text;
+            ta.style.position = "fixed";
+            ta.style.left = "-9999px";
+            ta.style.opacity = "0";
+            document.body.appendChild(ta);
+            ta.select();
+            try {
+              document.execCommand("copy");
+              return true;
+            } catch (_) {
+              return false;
+            } finally {
+              document.body.removeChild(ta);
+            }
+          }
+
           return function () {
             var c = p.querySelector("code");
             var text = c ? c.textContent : p.textContent;
-            navigator.clipboard.writeText(text).then(function () {
-              b.innerHTML = CHECK_SVG;
-              b.classList.add("copied");
-              setTimeout(function () {
-                b.innerHTML = COPY_SVG;
-                b.classList.remove("copied");
-              }, 1500);
-            });
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              navigator.clipboard.writeText(text).then(
+                function () {
+                  showCopied(b);
+                },
+                function () {
+                  if (fallbackCopy(text)) showCopied(b);
+                },
+              );
+            } else {
+              if (fallbackCopy(text)) showCopied(b);
+            }
           };
         })(btn, pre),
       );
