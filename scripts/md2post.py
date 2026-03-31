@@ -852,7 +852,9 @@ def main() -> None:
     os.makedirs(blog_dir, exist_ok=True)
 
     num = args.number if args.number is not None else next_number(blog_dir)
-    slug = args.slug or slugify(meta["title"])
+    # Derive slug from the source filename (e.g. "my-post.md" → "my-post"),
+    # unless explicitly overridden via --slug.
+    slug = args.slug or os.path.splitext(os.path.basename(md_path))[0]
     filename = f"{num}.{slug}.html"
     out_path = os.path.join(blog_dir, filename)
 
